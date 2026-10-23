@@ -10,6 +10,7 @@ import {
     SMART_PUMPS, RAG_TECHNICAL_DOCUMENTS, 
     DATA_PROVENANCE 
 } from '../services/agriPulseData';
+import { assistantService } from '../services/api';
 
 const SUGGESTED_DIAGNOSTIC_QUESTIONS = [
     {
@@ -91,24 +92,17 @@ const AIDiagnosticsPage = () => {
         setAiGatewayError(null);
 
         try {
-            const token = localStorage.getItem('token');
-            const response = await fetch('/api/v1/ai/chat', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-                },
-                body: JSON.stringify({
-                    question: `[ASSET CONTEXT: Pump ${selectedPump.id} (${selectedPump.model}), Vibration: ${selectedPump.metrics.vibrationRms} mm/s, Temp: ${selectedPump.metrics.casingTemp}°C, Pressure: ${selectedPump.metrics.dischargePressure} bar, Flow: ${selectedPump.metrics.flowRate} L/min]\n\n${textToSend}`,
-                    chatId: `agripulse_${selectedPump.id}`
-                })
+            const data = await assistantService.sendChatMessage({
+                question: textToSend,
+                pumpId: selectedPump.id,
+                context: {
+                    model: selectedPump.model,
+                    metrics: selectedPump.metrics,
+                    status: selectedPump.status,
+                    failureMode: selectedPump.failureMode
+                }
             });
 
-            if (!response.ok) {
-                throw new Error(`AI Gateway error (HTTP ${response.status})`);
-            }
-
-            const data = await response.json();
             const aiText = data.text || data.answer || data.message || JSON.stringify(data);
 
             const assistantMsg = {
@@ -116,21 +110,19 @@ const AIDiagnosticsPage = () => {
                 role: 'assistant',
                 text: aiText,
                 timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                dataProvenance: "LIVE_RAG_GATEWAY"
+                dataProvenance: data.dataProvenance || "LIVE_RAG_GATEWAY"
             };
 
             setMessages(prev => [...prev, assistantMsg]);
         } catch (err) {
             console.warn('AI Gateway unreachable or failed:', err);
-            setAiGatewayError(err.message || 'AI Gateway Unreachable');
+            setAiGatewayError(err.userMessage || err.message || 'AI Gateway Service Error');
 
-            // STRICT DATA INTEGRITY: Do not hallucinate fake AI answers!
-            // Instead, inform the engineer transparently.
             const failureNoticeMsg = {
                 id: `err-${Date.now()}`,
                 role: 'system',
                 isError: true,
-                text: `⚠️ **AI Gateway Unreachable**: Could not contact Flowise/MicroMind LLM backend. The system will **not** generate fabricated diagnostic output. Please inspect the verified OEM Technical Manuals and mechanical root cause breakdown in the right-hand panel.`,
+                text: `⚠️ **Diagnostic Gateway Notice**: ${err.userMessage || 'Could not contact LLM diagnostic service'}. Please refer to the verified OEM Technical Manuals in the right-hand panel or retry.`,
                 timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
             };
 

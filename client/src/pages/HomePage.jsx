@@ -1,539 +1,507 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import { 
-    Activity, AlertTriangle, CheckCircle2, ChevronRight, 
-    Droplets, Gauge, Info, Layers, RefreshCw, 
-    Sparkles, Thermometer, Wrench, Zap, ExternalLink,
-    ArrowUpRight, ShieldCheck, Clock, ArrowRight,
-    ScanEye, BrainCircuit, Play, Check
+    Activity, Sparkles, AlertTriangle, Clock, 
+    ChevronRight, RefreshCw, CheckCircle2, Layers 
 } from 'lucide-react';
-import LivingSystemPulse from '../components/LivingSystemPulse';
+import { 
+    ResponsiveContainer, AreaChart, Area, XAxis, YAxis, 
+    CartesianGrid, Tooltip, ReferenceLine, Line 
+} from 'recharts';
+import PumpSchematic from '../components/digital-twin/PumpSchematic';
 import { 
     SMART_PUMPS, INTELLIGENCE_BRIEFS, 
-    DATA_PROVENANCE, IRRIGATION_SECTORS 
+    DATA_PROVENANCE, PUMP_04_TIMESERIES, 
+    ACTIVITIES 
 } from '../services/agriPulseData';
+import { pumpService } from '../services/api';
 
+/**
+ * HomePage — Overview Dashboard (Signature Screen)
+ * 
+ * Recreated from AgriPulse Living Intelligence design prototype:
+ * - Editorial masthead with provenance tag and quick action CTAs
+ * - Fleet Operational State KPI matrix with critical anomaly card and 3-color reliability bar
+ * - Monitored Assets list with interactive selection
+ * - Interactive CAD Digital Twin Centrifugal Pump SVG Schematic with probe readouts
+ * - 24-Hour Telemetry Analysis chart with metric switcher tabs (Vibration, Temp, Pressure, Current)
+ * - Intelligence Briefing with prescriptive RAG recommendations
+ * - Chronological Activity Stream audit log
+ */
 const HomePage = () => {
     const navigate = useNavigate();
     const outletContext = useOutletContext();
     const selectedSector = outletContext?.selectedSector;
-    const onSelectSector = outletContext?.onSelectSector;
-    const onInvestigateAlert = outletContext?.onInvestigateAlert;
-    const onOpenOnboarding = outletContext?.onOpenOnboarding;
 
-    // Filter active pumps by selected sector if filtered
+    const [pumps, setPumps] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    // Selected target pump for Digital Twin CAD schematic
+    const [selectedPumpId, setSelectedPumpId] = useState('P-04');
+
+    // Selected sensor metric tab for 24h chart & schematic ('vibration' | 'temperature' | 'pressure' | 'current')
+    const [selectedSensorMetric, setSelectedSensorMetric] = useState('vibration');
+
+    const loadDashboardData = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const res = await pumpService.getPumps();
+            const list = res?.data || res?.pumps || res;
+            setPumps(Array.isArray(list) && list.length > 0 ? list : SMART_PUMPS);
+        } catch (err) {
+            console.warn('Failed to load dashboard data:', err);
+            setError(err?.userMessage || 'Could not refresh telemetry data');
+            setPumps(SMART_PUMPS);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        loadDashboardData();
+    }, []);
+
+    const allPumps = pumps.length > 0 ? pumps : SMART_PUMPS;
+
+    // Filter active pumps if a sector is selected in the top navbar
     const activePumps = selectedSector 
-        ? SMART_PUMPS.filter(p => p.sectorId === selectedSector.id)
-        : SMART_PUMPS;
+        ? allPumps.filter(p => p.sectorId === selectedSector.id)
+        : allPumps;
 
-    // Fleet Health calculations
-    const totalPumps = activePumps.length;
-    const criticalCount = activePumps.filter(p => p.status === 'CRITICAL').length;
-    const warningCount = activePumps.filter(p => p.status === 'WARNING').length;
-    const healthyCount = activePumps.filter(p => p.status === 'HEALTHY' || p.status === 'STANDBY').length;
+    // Active pump object for the CAD Schematic
+    const activePump = activePumps.find(p => p.id === selectedPumpId) 
+        || allPumps.find(p => p.id === selectedPumpId) 
+        || activePumps[0] 
+        || SMART_PUMPS[0];
 
-    const healthyPct = Math.round((healthyCount / totalPumps) * 100);
-    const warningPct = Math.round((warningCount / totalPumps) * 100);
-    const criticalPct = Math.round((criticalCount / totalPumps) * 100);
-
+    // Aggregated metrics
+    const totalCount = activePumps.length || 1;
     const totalFlow = activePumps.reduce((acc, p) => acc + (p.metrics?.flowRate || 0), 0);
     const totalPower = activePumps.reduce((acc, p) => acc + (p.metrics?.powerKw || 0), 0);
 
-    // Urgent pump for Question 2
-    const urgentPump = SMART_PUMPS.find(p => p.id === 'P-04') || SMART_PUMPS[0];
+    const healthyCount = activePumps.filter(p => p.status === 'HEALTHY' || p.status === 'STANDBY').length;
+    const warningCount = activePumps.filter(p => p.status === 'WARNING').length;
+    const criticalCount = activePumps.filter(p => p.status === 'CRITICAL').length;
 
-    // Predictive failure candidates for Question 3
-    const atRiskPumps = [
-        {
-            id: "P-04",
-            name: "Pump P-04 (Zone 2)",
-            sector: "Sector Delta-7",
-            status: "CRITICAL",
-            rulHours: 38,
-            mode: "Bearing Cavitation & Galling",
-            probability: 89,
-            urgency: "Immediate (0h – 12h)"
-        },
-        {
-            id: "P-09",
-            name: "Pump P-09 (Intake Booster)",
-            sector: "Sector Alpha-3",
-            status: "WARNING",
-            rulHours: 96,
-            mode: "DN80 Flange Gasket Seal Degradation",
-            probability: 64,
-            urgency: "Next 96h Window"
-        },
-        {
-            id: "P-12",
-            name: "Pump P-12 (Main Line)",
-            sector: "Sector Gamma-12",
-            status: "WARNING",
-            rulHours: 180,
-            mode: "Contactor Terminal Phase Imbalance",
-            probability: 42,
-            urgency: "Routine Cycle"
-        },
-        {
-            id: "P-01",
-            name: "Pump P-01 (Primary Intake)",
-            sector: "Sector Delta-7",
-            status: "HEALTHY",
-            rulHours: 2400,
-            mode: "Nominal Running State",
-            probability: 4,
-            urgency: "Long-term (2,400h)"
-        }
-    ];
+    const healthyPct = Math.round((healthyCount / totalCount) * 100);
+    const warningPct = Math.round((warningCount / totalCount) * 100);
+    const criticalPct = Math.round((criticalCount / totalCount) * 100);
 
-    // Actionable steps for Question 4
-    const [completedSteps, setCompletedSteps] = useState({});
-    const toggleStep = (stepId) => {
-        setCompletedSteps(prev => ({ ...prev, [stepId]: !prev[stepId] }));
+    // Metric key mapping for timeseries chart
+    const metricDataKeyMap = {
+        vibration: 'vibration',
+        temperature: 'temp',
+        pressure: 'pressure',
+        current: 'current'
     };
+    const currentDataKey = metricDataKeyMap[selectedSensorMetric] || 'vibration';
 
     return (
-        <div className="max-w-5xl mx-auto space-y-6 md:space-y-8 select-none">
-            {/* 1. WELCOMING MOBILE-FIRST HEADER */}
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 border-b border-[#E6E5DC] pb-4">
+        <div className="max-w-7xl mx-auto space-y-6">
+            {/* 1. EDITORIAL MASTHEAD */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-[#E6E5DC] pb-4">
                 <div>
                     <div className="flex items-center gap-2 mb-1">
-                        <span className="text-[0.65rem] font-mono tracking-widest uppercase font-extrabold px-2 py-0.5 rounded-full bg-[#173F35] text-[#C7F36B]">
-                            LIVING INTELLIGENCE
+                        <span className="text-[0.68rem] font-mono tracking-widest uppercase font-extrabold px-2 py-0.5 rounded bg-[#173F35] text-[#C7F36B]">
+                            AUTONOMOUS FLEET RADAR
                         </span>
-                        <span className="text-[0.65rem] font-mono px-2 py-0.5 rounded-full bg-[#ECEBE4] text-[#555A52] border border-[#D5D4CA]">
-                            {DATA_PROVENANCE.dataSource}
+                        <span className="text-[0.68rem] font-mono px-2 py-0.5 rounded bg-[#ECEBE4] text-[#555A52] border border-[#D5D4CA]">
+                            {DATA_PROVENANCE?.dataSource || 'SIMULATED_BENCHMARK_FIXTURE'}
                         </span>
                     </div>
-                    <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#173F35] tracking-tight">
+                    <h1 className="text-3xl md:text-4xl font-extrabold text-[#173F35] tracking-tight">
                         Your irrigation network, in focus.
                     </h1>
-                    <p className="text-xs sm:text-sm text-[#858A80] mt-1 max-w-xl leading-relaxed">
-                        Continuous mechanical vitality, cavitation forecasting, and automated hydraulic balance across{" "}
+                    <p className="text-xs md:text-sm text-[#858A80] mt-1 max-w-2xl leading-relaxed">
+                        Continuous mechanical telemetry, cavitation forecasting, and automated hydraulic balance across{' '}
                         <strong className="text-[#252B28]">
-                            {selectedSector ? selectedSector.name : "All 3 Irrigation Sectors (18 Smart Pumps)"}
+                            {selectedSector ? selectedSector.name : 'All 3 Irrigation Sectors (18 Smart Pumps)'}
                         </strong>.
                     </p>
                 </div>
 
-                {/* Quick actions for tablet/desktop */}
-                <div className="hidden sm:flex items-center gap-2">
-                    <button
-                        onClick={() => navigate('/diagnostics')}
-                        className="agri-btn agri-btn-lime text-xs py-2 px-3.5 shadow-xs"
+                <div className="flex items-center gap-2">
+                    <button 
+                        onClick={() => navigate('/predictive')} 
+                        className="agri-btn agri-btn-lime text-xs"
                     >
                         <Sparkles size={14} />
-                        Ask AI Copilot
+                        <span>Failure Forecast</span>
                     </button>
-                    <button
-                        onClick={() => navigate('/operations')}
-                        className="agri-btn agri-btn-outline text-xs py-2 px-3.5 bg-white"
+                    <button 
+                        onClick={() => navigate('/operations')} 
+                        className="agri-btn agri-btn-outline text-xs bg-white"
                     >
                         <Activity size={14} />
-                        Fleet Matrix
+                        <span>Fleet Matrix</span>
                     </button>
                 </div>
             </div>
 
-            {/* 2. QUESTION 1: "IS MY IRRIGATION SYSTEM HEALTHY?" */}
-            {/* Visual Centerpiece: Living System Health Pulse Ring */}
-            <section aria-labelledby="question-1-heading" className="space-y-2">
-                <div className="flex items-center justify-between">
-                    <h2 id="question-1-heading" className="text-xs font-mono font-bold tracking-wider uppercase text-[#858A80] flex items-center gap-1.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#173F35]" />
-                        1. System Vitality Overview
-                    </h2>
-                    <span className="text-[0.68rem] font-mono text-[#858A80]">
-                        Updated just now
-                    </span>
-                </div>
-
-                <LivingSystemPulse 
-                    healthyPct={healthyPct}
-                    warningPct={warningPct}
-                    criticalPct={criticalPct}
-                    totalPumps={totalPumps}
-                    totalFlow={totalFlow}
-                    averagePressure={5.9}
-                    selectedSector={selectedSector}
-                    onSelectSector={onSelectSector}
-                />
-            </section>
-
-            {/* 3. QUESTION 2: "WHAT NEEDS MY ATTENTION NOW?" */}
-            {/* Critical Attention Card */}
-            <section aria-labelledby="question-2-heading" className="space-y-2">
-                <div className="flex items-center justify-between">
-                    <h2 id="question-2-heading" className="text-xs font-mono font-bold tracking-wider uppercase text-[#858A80] flex items-center gap-1.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#D94C45]" />
-                        2. Immediate Attention Required
-                    </h2>
-                    <span className="text-[0.68rem] font-mono text-[#D94C45] font-bold">
-                        1 High-Priority Anomaly
-                    </span>
-                </div>
-
-                <div className="agri-mobile-card border-l-4 border-l-[#D94C45] p-5 sm:p-6 space-y-4">
-                    {/* Top title and status tag */}
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-[#F0EFEA]">
-                        <div className="flex items-center gap-2.5">
-                            <div className="w-9 h-9 rounded-xl bg-[#FDECEC] text-[#D94C45] flex items-center justify-center flex-shrink-0">
-                                <AlertTriangle size={18} />
-                            </div>
-                            <div>
-                                <div className="flex items-center gap-2">
-                                    <h3 className="text-sm sm:text-base font-extrabold text-[#173F35]">
-                                        {urgentPump.name}
-                                    </h3>
-                                    <span className="text-[0.65rem] font-mono font-bold px-1.5 py-0.5 rounded bg-[#FDECEC] text-[#9E1F1A] border border-[#F8B4B1]">
-                                        CRITICAL
-                                    </span>
-                                </div>
-                                <div className="text-[0.7rem] text-[#858A80] font-mono">
-                                    {urgentPump.model} • Sector Delta-7 (Zone 2 Booster)
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* RUL Countdown Badge */}
-                        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FAF0E1] border border-[#F5D8A3] text-xs font-mono font-bold text-[#925805] self-start sm:self-auto">
-                            <Clock size={13} />
-                            <span>{urgentPump.rulHours}h Remaining Life</span>
-                        </div>
+            {/* Error Notification Banner */}
+            {error && (
+                <div className="p-3 bg-[#FDECEC] border border-[#F8B4B1] rounded-lg text-xs text-[#9E1F1A] flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        <AlertTriangle size={15} />
+                        <span>{error}</span>
                     </div>
-
-                    {/* Sensor Metric Readouts */}
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
-                        <div className="bg-[#FAF9F5] p-2.5 rounded-xl border border-[#E6E5DC]">
-                            <div className="text-[0.68rem] text-[#858A80] flex items-center gap-1">
-                                <Activity size={12} className="text-[#D94C45]" />
-                                <span>Vibration RMS</span>
-                            </div>
-                            <div className="text-base font-extrabold font-mono text-[#D94C45] mt-0.5">
-                                {urgentPump.metrics.vibrationRms} <span className="text-[0.65rem] font-sans font-semibold text-[#858A80]">mm/s</span>
-                            </div>
-                            <div className="text-[0.62rem] text-[#D94C45] font-mono">
-                                ISO Zone C &gt; 4.5
-                            </div>
-                        </div>
-
-                        <div className="bg-[#FAF9F5] p-2.5 rounded-xl border border-[#E6E5DC]">
-                            <div className="text-[0.68rem] text-[#858A80] flex items-center gap-1">
-                                <Thermometer size={12} className="text-[#E7A944]" />
-                                <span>Casing Temp</span>
-                            </div>
-                            <div className="text-base font-extrabold font-mono text-[#252B28] mt-0.5">
-                                {urgentPump.metrics.casingTemp} <span className="text-[0.65rem] font-sans font-semibold text-[#858A80]">°C</span>
-                            </div>
-                            <div className="text-[0.62rem] text-[#858A80] font-mono">
-                                Max Limit: 88°C
-                            </div>
-                        </div>
-
-                        <div className="bg-[#FAF9F5] p-2.5 rounded-xl border border-[#E6E5DC]">
-                            <div className="text-[0.68rem] text-[#858A80] flex items-center gap-1">
-                                <Gauge size={12} className="text-[#173F35]" />
-                                <span>Discharge Head</span>
-                            </div>
-                            <div className="text-base font-extrabold font-mono text-[#173F35] mt-0.5">
-                                {urgentPump.metrics.dischargePressure} <span className="text-[0.65rem] font-sans font-semibold text-[#858A80]">bar</span>
-                            </div>
-                            <div className="text-[0.62rem] text-[#858A80] font-mono">
-                                Target: 6.2 bar
-                            </div>
-                        </div>
-
-                        <div className="bg-[#FAF9F5] p-2.5 rounded-xl border border-[#E6E5DC]">
-                            <div className="text-[0.68rem] text-[#858A80] flex items-center gap-1">
-                                <Zap size={12} className="text-[#173F35]" />
-                                <span>Current Draw</span>
-                            </div>
-                            <div className="text-base font-extrabold font-mono text-[#252B28] mt-0.5">
-                                {urgentPump.metrics.motorCurrent} <span className="text-[0.65rem] font-sans font-semibold text-[#858A80]">A</span>
-                            </div>
-                            <div className="text-[0.62rem] text-[#858A80] font-mono">
-                                Rated FLA: 28.0 A
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Plain-English Root Cause Explanation */}
-                    <div className="bg-[#EBF1E8]/70 border border-[#DCE7D8] rounded-xl p-3 text-xs leading-relaxed text-[#252B28]">
-                        <div className="flex items-start gap-2">
-                            <Sparkles size={16} className="text-[#173F35] flex-shrink-0 mt-0.5" />
-                            <div>
-                                <strong className="text-[#173F35]">AI Diagnostic Explanation:</strong>{" "}
-                                Acoustic emission sensors detect a <strong>1.48 kHz harmonic spike</strong> coinciding with suction pressure dropping to 1.12 bar. Micro-vapor cavities are collapsing against the bronze impeller blades, generating localized cavitation erosion.
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Action buttons */}
-                    <div className="flex flex-wrap items-center gap-2 pt-1">
-                        <button
-                            onClick={() => navigate('/diagnostics')}
-                            className="agri-btn agri-btn-lime text-xs py-2 px-3.5 shadow-xs flex-1 sm:flex-initial"
-                        >
-                            <Sparkles size={13} />
-                            <span>Ask AI Copilot for Root Cause</span>
-                        </button>
-                        <button
-                            onClick={() => navigate('/operations')}
-                            className="agri-btn agri-btn-primary text-xs py-2 px-3.5 flex-1 sm:flex-initial"
-                        >
-                            <Activity size={13} />
-                            <span>Inspect Pump Twin</span>
-                        </button>
-                        <button
-                            onClick={() => navigate('/maintenance')}
-                            className="agri-btn agri-btn-outline text-xs py-2 px-3 bg-white"
-                        >
-                            <Wrench size={13} />
-                            <span>Review LOTO Work Order</span>
-                        </button>
-                    </div>
-                </div>
-            </section>
-
-            {/* 4. QUESTION 3: "WHAT MIGHT FAIL SOON?" */}
-            {/* Predictive Foresight Carousel (Weibull Remaining Useful Life) */}
-            <section aria-labelledby="question-3-heading" className="space-y-2">
-                <div className="flex items-center justify-between">
-                    <h2 id="question-3-heading" className="text-xs font-mono font-bold tracking-wider uppercase text-[#858A80] flex items-center gap-1.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#E7A944]" />
-                        3. Predictive Failure Foresight (Weibull RUL)
-                    </h2>
-                    <button
-                        onClick={() => navigate('/predictive')}
-                        className="text-xs font-bold text-[#173F35] hover:underline flex items-center gap-1"
+                    <button 
+                        onClick={loadDashboardData} 
+                        className="underline font-bold text-xs flex items-center gap-1 hover:text-[#7A1511]"
                     >
-                        <span>Full Curves</span>
-                        <ChevronRight size={13} />
+                        <RefreshCw size={12} />
+                        Retry
                     </button>
                 </div>
+            )}
 
-                {/* Horizontal Touch Scrollable List on mobile */}
-                <div className="flex gap-3 overflow-x-auto no-scrollbar pb-1">
-                    {atRiskPumps.map((p) => {
-                        const isCrit = p.status === 'CRITICAL';
-                        const isWarn = p.status === 'WARNING';
+            {/* 2. FLEET STATUS & HEALTH COMPOSITION (8 cols + 4 cols) */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                {/* Left: Operational State KPIs & Critical Card (8 cols) */}
+                <div className="lg:col-span-8 agri-card flex flex-col justify-between">
+                    <div>
+                        <div className="flex items-center justify-between pb-3 border-b border-[#F0EFEA]">
+                            <h3 className="text-xs font-extrabold tracking-wider text-[#173F35] uppercase flex items-center gap-2">
+                                <span className="w-2 h-2 rounded-full bg-[#173F35]"></span>
+                                Fleet Operational State
+                            </h3>
+                            <span className="text-xs font-mono text-[#858A80]">
+                                Total Load: {totalPower.toFixed(1)} kW
+                            </span>
+                        </div>
 
-                        return (
-                            <div 
-                                key={p.id}
-                                onClick={() => navigate('/predictive')}
-                                className="min-w-[260px] sm:min-w-[280px] bg-white border border-[#E6E5DC] rounded-2xl p-4 shadow-2xs hover:shadow-sm hover:border-[#173F35] transition-all cursor-pointer flex flex-col justify-between flex-shrink-0"
-                            >
-                                <div>
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-xs font-extrabold text-[#173F35]">
-                                            {p.name}
-                                        </span>
-                                        <span className={`text-[0.62rem] font-mono font-bold px-1.5 py-0.5 rounded ${
-                                            isCrit ? 'bg-[#FDECEC] text-[#9E1F1A]' : isWarn ? 'bg-[#FAF0E1] text-[#925805]' : 'bg-[#EBF1E8] text-[#173F35]'
-                                        }`}>
-                                            {p.status}
-                                        </span>
-                                    </div>
-                                    <div className="text-[0.68rem] text-[#858A80] font-mono mt-0.5">
-                                        {p.sector}
-                                    </div>
-
-                                    {/* RUL Big Metric */}
-                                    <div className="mt-3">
-                                        <div className="text-2xl font-extrabold font-mono text-[#173F35]">
-                                            {p.rulHours >= 1000 ? `${(p.rulHours/1000).toFixed(1)}k` : p.rulHours}
-                                            <span className="text-xs font-sans font-semibold text-[#858A80] ml-1">hours left</span>
-                                        </div>
-                                        <div className="text-[0.72rem] text-[#252B28] font-semibold mt-1 line-clamp-1">
-                                            {p.mode}
-                                        </div>
-                                    </div>
+                        {/* Top KPI Metric Numbers */}
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 my-4">
+                            <div>
+                                <div className="text-[0.68rem] uppercase font-semibold text-[#858A80]">Monitored Assets</div>
+                                <div className="text-2xl font-extrabold text-[#173F35] font-mono mt-0.5">
+                                    {totalCount} <span className="text-xs text-[#858A80] font-normal">Pumps</span>
                                 </div>
+                                <div className="text-[0.68rem] text-[#858A80]">3 Sectors Active</div>
+                            </div>
+                            <div>
+                                <div className="text-[0.68rem] uppercase font-semibold text-[#858A80]">Total Delivery</div>
+                                <div className="text-2xl font-extrabold text-[#173F35] font-mono mt-0.5">
+                                    {totalFlow.toLocaleString()} <span className="text-xs text-[#858A80] font-normal">L/min</span>
+                                </div>
+                                <div className="text-[0.68rem] text-[#173F35] font-semibold">92% Target Flow</div>
+                            </div>
+                            <div>
+                                <div className="text-[0.68rem] uppercase font-semibold text-[#2E7D32]">Optimal Units</div>
+                                <div className="text-2xl font-extrabold text-[#2E7D32] font-mono mt-0.5">{healthyCount}</div>
+                                <div className="text-[0.68rem] text-[#2E7D32] font-semibold">{healthyPct}% Healthy</div>
+                            </div>
+                            <div>
+                                <div className="text-[0.68rem] uppercase font-semibold text-[#D94C45]">Urgent Intervention</div>
+                                <div className="text-2xl font-extrabold text-[#D94C45] font-mono mt-0.5">
+                                    {criticalCount} <span className="text-xs font-normal text-[#858A80]">unit</span>
+                                </div>
+                                <div className="text-[0.68rem] text-[#D94C45] font-semibold">P-04 Cavitation</div>
+                            </div>
+                        </div>
 
-                                {/* Progress probability bar */}
-                                <div className="mt-3 pt-3 border-t border-[#F0EFEA] space-y-1.5">
-                                    <div className="flex items-center justify-between text-[0.65rem] font-mono">
-                                        <span className="text-[#858A80]">Failure Probability</span>
-                                        <span className={`font-bold ${isCrit ? 'text-[#D94C45]' : isWarn ? 'text-[#E7A944]' : 'text-[#173F35]'}`}>
-                                            {p.probability}%
+                        {/* Critical Alert Card */}
+                        <div className="bg-[#FDECEC] border border-[#F8B4B1] rounded-md p-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                            <div className="flex items-start gap-3">
+                                <AlertTriangle size={18} className="text-[#D94C45] mt-0.5 flex-shrink-0" />
+                                <div className="text-xs">
+                                    <div className="font-bold text-[#9E1F1A] flex flex-wrap items-center gap-2">
+                                        <span>CRITICAL ANOMALY: Pump P-04 Bearing Cavitation</span>
+                                        <span className="font-mono text-[0.7rem] bg-[#FAD9D7] px-1.5 py-0.2 rounded text-[#8A1612]">
+                                            RUL: 38 Operating Hours
                                         </span>
                                     </div>
-                                    <div className="h-1.5 w-full bg-[#EFEFE7] rounded-full overflow-hidden">
-                                        <div 
-                                            className={`h-full rounded-full ${isCrit ? 'bg-[#D94C45]' : isWarn ? 'bg-[#E7A944]' : 'bg-[#173F35]'}`}
-                                            style={{ width: `${p.probability}%` }}
-                                        />
-                                    </div>
-                                    <div className="text-[0.62rem] font-mono text-[#858A80] text-right">
-                                        Window: {p.urgency}
-                                    </div>
+                                    <p className="text-[#7A1C18] mt-1 leading-relaxed text-[0.75rem]">
+                                        Vibration RMS reached 5.84 mm/s at 1.48 kHz harmonic peak. Risk of inner raceway micro-spalling. Immediate VFD throttle to 45 Hz recommended.
+                                    </p>
                                 </div>
                             </div>
-                        );
-                    })}
-                </div>
-            </section>
+                            <button 
+                                onClick={() => {
+                                    setSelectedPumpId('P-04');
+                                    navigate('/predictive');
+                                }} 
+                                className="px-3 py-1.5 rounded bg-[#D94C45] text-white font-bold text-[0.7rem] hover:bg-[#B33832] transition-colors flex-shrink-0 self-end sm:self-auto"
+                            >
+                                Inspect Risk
+                            </button>
+                        </div>
+                    </div>
 
-            {/* 5. QUESTION 4: "WHAT SHOULD I DO NEXT?" */}
-            {/* Actionable Recommendations Stack */}
-            <section aria-labelledby="question-4-heading" className="space-y-2">
-                <div className="flex items-center justify-between">
-                    <h2 id="question-4-heading" className="text-xs font-mono font-bold tracking-wider uppercase text-[#858A80] flex items-center gap-1.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#173F35]" />
-                        4. Recommended Safe Next Actions
-                    </h2>
-                    <span className="text-[0.68rem] font-mono text-[#858A80]">
-                        Guided by Living Intelligence
+                    {/* Fleet Reliability Proportion Bar */}
+                    <div className="mt-4 pt-3 border-t border-[#F0EFEA]">
+                        <div className="flex justify-between text-xs font-semibold text-[#858A80] mb-1.5">
+                            <span>Fleet Reliability Proportion</span>
+                            <span className="font-mono text-[0.7rem]">
+                                {healthyPct}% Optimal • {warningPct}% Caution • {criticalPct}% Urgent
+                            </span>
+                        </div>
+                        <div className="h-2.5 w-full bg-[#EFEFE7] rounded-full overflow-hidden flex">
+                            <div style={{ width: `${healthyPct}%` }} className="bg-[#173F35] transition-all duration-500" title="Healthy"></div>
+                            <div style={{ width: `${warningPct}%` }} className="bg-[#E7A944] transition-all duration-500" title="Warning"></div>
+                            <div style={{ width: `${criticalPct}%` }} className="bg-[#D94C45] transition-all duration-500" title="Critical"></div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Right: Monitored Assets Switcher List (4 cols) */}
+                <div className="lg:col-span-4 agri-card flex flex-col justify-between">
+                    <div>
+                        <div className="flex items-center justify-between pb-3 border-b border-[#F0EFEA]">
+                            <h3 className="text-xs font-extrabold tracking-wider text-[#173F35] uppercase">
+                                Monitored Assets ({activePumps.length})
+                            </h3>
+                            <span className="text-[0.68rem] text-[#858A80] font-mono">Click to inspect</span>
+                        </div>
+
+                        <div className="divide-y divide-[#F6F5EF] max-h-72 overflow-y-auto mt-2 space-y-1">
+                            {activePumps.map(pump => {
+                                const isSelected = pump.id === selectedPumpId;
+                                const displayName = pump.name ? pump.name.split('(')[0] : pump.id;
+
+                                return (
+                                    <button
+                                        key={pump.id}
+                                        type="button"
+                                        onClick={() => setSelectedPumpId(pump.id)}
+                                        className={`w-full text-left p-2 rounded cursor-pointer transition-colors flex items-center justify-between ${
+                                            isSelected ? 'bg-[#173F35] text-white shadow-xs' : 'hover:bg-[#F6F5EF] text-[#252B28]'
+                                        }`}
+                                    >
+                                        <div className="flex items-center gap-2 min-w-0">
+                                            <span className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                                                pump.status === 'CRITICAL' ? 'bg-[#D94C45]' :
+                                                pump.status === 'WARNING' ? 'bg-[#E7A944]' : 'bg-[#C7F36B]'
+                                            }`}></span>
+                                            <div className="min-w-0 truncate">
+                                                <div className="font-bold text-xs truncate">
+                                                    {pump.id} — {displayName}
+                                                </div>
+                                                <div className={`text-[0.68rem] font-mono truncate ${isSelected ? 'text-[#DCE7D8]' : 'text-[#858A80]'}`}>
+                                                    {pump.metrics?.flowRate} L/min • {pump.metrics?.dischargePressure} bar
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <span className={`text-[0.65rem] font-mono font-bold px-1.5 py-0.5 rounded flex-shrink-0 ml-2 ${
+                                            isSelected ? 'bg-[#C7F36B] text-[#173F35]' : 'bg-[#EFEFE7] text-[#555]'
+                                        }`}>
+                                            {pump.healthScore}%
+                                        </span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    <div className="pt-3 border-t border-[#F0EFEA] text-xs text-[#858A80] flex justify-between">
+                        <span>Digital Twin Target:</span>
+                        <span className="font-mono font-bold text-[#173F35]">{activePump.id}</span>
+                    </div>
+                </div>
+            </div>
+
+            {/* 3. SIGNATURE PUMP CAD SCHEMATIC VISUALIZATION */}
+            <div>
+                <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
+                    <div className="flex items-center gap-2">
+                        <span className="text-xs font-extrabold uppercase tracking-wider text-[#173F35]">
+                            CAD Digital Twin Schematic & Telemetry Probes
+                        </span>
+                        <span className="text-[0.68rem] font-mono px-2 py-0.5 rounded bg-[#ECEBE4] text-[#555A52] border border-[#D5D4CA]">
+                            Focus: {activePump.name}
+                        </span>
+                    </div>
+                    <span className="text-[0.7rem] text-[#858A80]">
+                        Click on probes (VIB, TEMP, BAR, AMPS) to view live readings
                     </span>
                 </div>
 
-                <div className="space-y-2.5">
-                    {/* Action 1 */}
-                    <div className="agri-mobile-card p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                        <div className="flex items-start gap-3">
-                            <button
-                                onClick={() => toggleStep('vfd')}
-                                className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 transition-colors ${
-                                    completedSteps['vfd'] 
-                                        ? 'bg-[#173F35] text-white' 
-                                        : 'border border-[#D8D7CD] hover:border-[#173F35] text-transparent'
-                                }`}
-                                aria-label="Mark action complete"
-                            >
-                                <Check size={13} />
-                            </button>
-                            <div>
-                                <div className="flex items-center gap-2">
-                                    <span className="text-xs font-bold text-[#173F35]">
-                                        Step 1: Relieve Suction Cavitation
-                                    </span>
-                                    <span className="text-[0.62rem] font-mono px-1.5 py-0.2 rounded bg-[#ECEBE4] text-[#555A52] border border-[#D5D4CA]">
-                                        SIMULATION ONLY
-                                    </span>
-                                </div>
-                                <p className="text-xs text-[#858A80] mt-0.5 leading-snug">
-                                    Throttle variable frequency drive (VFD) from 54.2 Hz down to 45.0 Hz to raise Net Positive Suction Head (NPSH) margin and suppress impeller cavitation.
-                                </p>
+                <PumpSchematic 
+                    pump={activePump} 
+                    activeMetric={selectedSensorMetric} 
+                    onSelectMetric={(m) => setSelectedSensorMetric(m)} 
+                />
+            </div>
+
+            {/* 4. 24-HOUR TELEMETRY CHART & INTELLIGENCE BRIEFING */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                {/* 24h Telemetry Chart (7 cols) */}
+                <div className="lg:col-span-7 agri-card space-y-3">
+                    <div className="flex flex-wrap items-center justify-between pb-3 border-b border-[#F0EFEA] gap-2">
+                        <div>
+                            <div className="flex items-center gap-2">
+                                <h3 className="text-xs font-extrabold tracking-wider text-[#173F35] uppercase">
+                                    24-Hour Telemetry Analysis
+                                </h3>
+                                <span className="text-[0.68rem] font-mono px-1.5 py-0.5 rounded bg-[#ECEBE4] text-[#555A52] border border-[#D5D4CA]">
+                                    ISO 10816 CLASS II
+                                </span>
                             </div>
+                            <p className="text-[0.7rem] text-[#858A80] mt-0.5">
+                                Parameter: <strong className="text-[#173F35] uppercase">{selectedSensorMetric}</strong> on {activePump.id}
+                            </p>
                         </div>
 
-                        <button
-                            onClick={() => navigate('/operations')}
-                            className="agri-btn agri-btn-outline text-xs py-1.5 px-3 self-end sm:self-auto bg-white flex items-center gap-1 flex-shrink-0"
-                        >
-                            <span>Open VFD Simulator</span>
-                            <ChevronRight size={13} />
-                        </button>
+                        {/* Metric Switcher Tabs */}
+                        <div className="flex gap-1 bg-[#EFEFE7] p-1 rounded text-[0.7rem] font-semibold">
+                            {[
+                                { id: 'vibration', label: 'Vibration' },
+                                { id: 'temperature', label: 'Temp' },
+                                { id: 'pressure', label: 'Pressure' },
+                                { id: 'current', label: 'Current' }
+                            ].map(tab => (
+                                <button
+                                    key={tab.id}
+                                    type="button"
+                                    onClick={() => setSelectedSensorMetric(tab.id)}
+                                    className={`px-2 py-0.5 rounded transition-all ${
+                                        selectedSensorMetric === tab.id 
+                                            ? 'bg-[#173F35] text-white shadow-xs' 
+                                            : 'text-[#555] hover:text-[#173F35]'
+                                    }`}
+                                >
+                                    {tab.label}
+                                </button>
+                            ))}
+                        </div>
                     </div>
 
-                    {/* Action 2 */}
-                    <div className="agri-mobile-card p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                        <div className="flex items-start gap-3">
-                            <button
-                                onClick={() => toggleStep('loto')}
-                                className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 transition-colors ${
-                                    completedSteps['loto'] 
-                                        ? 'bg-[#173F35] text-white' 
-                                        : 'border border-[#D8D7CD] hover:border-[#173F35] text-transparent'
-                                }`}
-                                aria-label="Mark action complete"
-                            >
-                                <Check size={13} />
-                            </button>
-                            <div>
-                                <div className="flex items-center gap-2">
-                                    <span className="text-xs font-bold text-[#173F35]">
-                                        Step 2: Dispatch Technician & LOTO Work Order
-                                    </span>
-                                    <span className="text-[0.62rem] font-mono font-bold px-1.5 py-0.2 rounded bg-[#FAF0E1] text-[#925805] border border-[#F5D8A3]">
-                                        PARTS STAGED
-                                    </span>
-                                </div>
-                                <p className="text-xs text-[#858A80] mt-0.5 leading-snug">
-                                    Assign Technician Ahmed El-Sayed for SKF 6312 bearing kit inspection. Strict electrical Lockout/Tagout (LOTO) breaker isolation required.
-                                </p>
-                            </div>
-                        </div>
-
-                        <button
-                            onClick={() => navigate('/maintenance')}
-                            className="agri-btn agri-btn-outline text-xs py-1.5 px-3 self-end sm:self-auto bg-white flex items-center gap-1 flex-shrink-0"
-                        >
-                            <span>Review Work Order</span>
-                            <ChevronRight size={13} />
-                        </button>
+                    {/* Recharts Area Curve */}
+                    <div className="h-60 w-full relative">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <AreaChart data={PUMP_04_TIMESERIES} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                                <defs>
+                                    <linearGradient id="metricGrad" x1="0" y1="0" x2="0" y2="1">
+                                        <stop 
+                                            offset="5%" 
+                                            stopColor={selectedSensorMetric === 'vibration' ? '#D94C45' : '#173F35'} 
+                                            stopOpacity={0.25} 
+                                        />
+                                        <stop 
+                                            offset="95%" 
+                                            stopColor={selectedSensorMetric === 'vibration' ? '#D94C45' : '#173F35'} 
+                                            stopOpacity={0.0} 
+                                        />
+                                    </linearGradient>
+                                </defs>
+                                <CartesianGrid strokeDasharray="3 3" stroke="#E6E5DC" vertical={false} />
+                                <XAxis dataKey="time" stroke="#858A80" fontSize={11} tickLine={false} />
+                                <YAxis stroke="#858A80" fontSize={11} tickLine={false} />
+                                <Tooltip 
+                                    contentStyle={{ 
+                                        backgroundColor: '#102D27', 
+                                        border: '1px solid #1C4B40',
+                                        borderRadius: '6px',
+                                        color: '#FFFFFF',
+                                        fontSize: '12px',
+                                        fontFamily: 'monospace'
+                                    }} 
+                                />
+                                {selectedSensorMetric === 'vibration' && (
+                                    <ReferenceLine 
+                                        y={4.5} 
+                                        stroke="#D94C45" 
+                                        strokeDasharray="3 3"
+                                        label={{ value: 'ISO ZONE C (4.5 mm/s)', fill: '#D94C45', fontSize: 10, position: 'right' }} 
+                                    />
+                                )}
+                                <Area 
+                                    type="monotone" 
+                                    dataKey={currentDataKey} 
+                                    stroke={selectedSensorMetric === 'vibration' ? '#D94C45' : '#173F35'} 
+                                    strokeWidth={2.5}
+                                    fillOpacity={1} 
+                                    fill="url(#metricGrad)" 
+                                />
+                            </AreaChart>
+                        </ResponsiveContainer>
                     </div>
 
-                    {/* Action 3 */}
-                    <div className="agri-mobile-card p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                        <div className="flex items-start gap-3">
-                            <button
-                                onClick={() => toggleStep('vision')}
-                                className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 transition-colors ${
-                                    completedSteps['vision'] 
-                                        ? 'bg-[#173F35] text-white' 
-                                        : 'border border-[#D8D7CD] hover:border-[#173F35] text-transparent'
-                                }`}
-                                aria-label="Mark action complete"
-                            >
-                                <Check size={13} />
-                            </button>
-                            <div>
-                                <div className="flex items-center gap-2">
-                                    <span className="text-xs font-bold text-[#173F35]">
-                                        Step 3: Correlate Foliar Crop Canopy Vigor
-                                    </span>
-                                    <span className="text-[0.62rem] font-mono px-1.5 py-0.2 rounded bg-[#EBF1E8] text-[#173F35] border border-[#DCE7D8]">
-                                        YOLOv8
-                                    </span>
-                                </div>
-                                <p className="text-xs text-[#858A80] mt-0.5 leading-snug">
-                                    Upload or inspect citrus canopy photos in Sector Delta-7 to verify whether lower line pressure has caused foliar water stress in Zone 2 trees.
-                                </p>
-                            </div>
-                        </div>
-
-                        <button
-                            onClick={() => navigate('/field-vision')}
-                            className="agri-btn agri-btn-outline text-xs py-1.5 px-3 self-end sm:self-auto bg-white flex items-center gap-1 flex-shrink-0"
-                        >
-                            <span>Launch Field Vision</span>
-                            <ChevronRight size={13} />
-                        </button>
+                    <div className="pt-2 border-t border-[#F0EFEA] flex justify-between text-xs text-[#858A80]">
+                        <span className="flex items-center gap-1.5">
+                            <span className="w-2 h-2 rounded-full bg-[#D94C45]"></span>
+                            <span>12:00 UTC: Vibration breached ISO 10816 Zone C alert limit (4.5 mm/s)</span>
+                        </span>
+                        <span className="font-mono text-[#D94C45] font-bold">Peak: 5.88 mm/s</span>
                     </div>
                 </div>
-            </section>
 
-            {/* 6. BOTTOM TOUCH DOCK / QUICK SHORTCUTS */}
-            <div className="pt-2 pb-4">
-                <div className="bg-[#FAF9F5] border border-[#D8D7CD] rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-                    <div className="flex items-center gap-3 text-center sm:text-left">
-                        <div className="w-10 h-10 rounded-xl bg-[#173F35] text-[#C7F36B] flex items-center justify-center flex-shrink-0 shadow-xs">
-                            <Sparkles size={18} />
+                {/* Intelligence Briefing (5 cols) */}
+                <div className="lg:col-span-5 agri-card flex flex-col justify-between">
+                    <div>
+                        <div className="flex items-center justify-between pb-3 border-b border-[#F0EFEA]">
+                            <h3 className="text-xs font-extrabold tracking-wider text-[#173F35] uppercase flex items-center gap-2">
+                                <Sparkles size={14} className="text-[#173F35]" />
+                                Intelligence Briefing
+                            </h3>
+                            <span className="text-[0.68rem] font-mono px-1.5 py-0.5 rounded bg-[#ECEBE4] text-[#555A52] border border-[#D5D4CA]">
+                                RAG EVIDENCE
+                            </span>
                         </div>
-                        <div>
-                            <div className="text-xs font-bold text-[#173F35]">Need diagnostic clarity?</div>
-                            <div className="text-[0.68rem] text-[#858A80]">The AI Copilot has indexed all Grundfos, KSB & Sulzer OEM manuals.</div>
+
+                        <div className="space-y-3 mt-3">
+                            {INTELLIGENCE_BRIEFS.slice(0, 3).map(b => (
+                                <div key={b.id} className="p-3 rounded bg-[#F6F5EF] border border-[#E6E5DC] text-xs">
+                                    <div className="flex items-center justify-between">
+                                        <div className="font-bold text-[#252B28] flex items-center gap-1.5">
+                                            <span className={`w-2 h-2 rounded-full ${b.severity === 'CRITICAL' ? 'bg-[#D94C45]' : 'bg-[#E7A944]'}`}></span>
+                                            {b.title}
+                                        </div>
+                                        <span className="font-mono text-[0.65rem] font-bold bg-[#DCE7D8] text-[#173F35] px-1.5 py-0.5 rounded">
+                                            {b.pumpId}
+                                        </span>
+                                    </div>
+                                    <p className="text-[#555A52] text-[0.72rem] mt-1 leading-snug">
+                                        {b.summary}
+                                    </p>
+                                    <div className="mt-2 text-[0.7rem] bg-white p-1.5 rounded border border-[#E6E5DC] text-[#173F35]">
+                                        <strong>Prescription:</strong> {b.recommendedAction || b.recommendation}
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </div>
-                    <div className="flex items-center gap-2 w-full sm:w-auto">
-                        <button
-                            onClick={() => navigate('/diagnostics')}
-                            className="flex-1 sm:flex-initial py-2 px-4 rounded-xl bg-[#173F35] text-white text-xs font-bold hover:bg-[#113129] flex items-center justify-center gap-1.5 shadow-xs"
-                        >
-                            <Sparkles size={13} className="text-[#C7F36B]" />
-                            <span>Ask Question</span>
-                        </button>
-                        {onOpenOnboarding && (
-                            <button
-                                onClick={onOpenOnboarding}
-                                className="py-2 px-3 rounded-xl border border-[#D8D7CD] bg-white text-xs font-semibold text-[#555A52] hover:bg-[#F6F5EF]"
-                            >
-                                Tour
-                            </button>
-                        )}
-                    </div>
+
+                    <button 
+                        onClick={() => navigate('/diagnostics')} 
+                        className="mt-4 w-full py-2 rounded bg-[#173F35] text-white font-bold text-xs hover:bg-[#12332B] transition-colors flex items-center justify-center gap-1.5"
+                    >
+                        <span>Open Technical AI Diagnostics</span>
+                        <ChevronRight size={14} />
+                    </button>
+                </div>
+            </div>
+
+            {/* 5. CHRONOLOGICAL ACTIVITY STREAM */}
+            <div className="agri-card">
+                <div className="flex items-center justify-between pb-3 border-b border-[#F0EFEA]">
+                    <h3 className="text-xs font-extrabold tracking-wider text-[#173F35] uppercase flex items-center gap-2">
+                        <Clock size={14} className="text-[#173F35]" />
+                        Chronological Activity Stream
+                    </h3>
+                    <span className="text-xs text-[#858A80]">Continuous Telemetry Event Audit</span>
+                </div>
+
+                <div className="divide-y divide-[#F6F5EF] mt-2">
+                    {ACTIVITIES.map((a, idx) => (
+                        <div key={idx} className="py-2.5 flex items-center justify-between text-xs flex-wrap gap-2">
+                            <div className="flex items-center gap-3">
+                                <span className="font-mono text-[0.7rem] text-[#858A80] w-16">{a.time}</span>
+                                <span className={`text-[0.65rem] font-mono font-bold px-1.5 py-0.2 rounded ${
+                                    a.type === 'CRITICAL' ? 'bg-[#D94C45] text-white' :
+                                    a.type === 'ACTION' ? 'bg-[#E7A944] text-[#252B28]' :
+                                    a.type === 'MAINTENANCE' ? 'bg-[#173F35] text-white' :
+                                    'bg-[#DCE7D8] text-[#173F35]'
+                                }`}>
+                                    {a.type}
+                                </span>
+                                <span className="text-[#252B28] font-medium">{a.text}</span>
+                            </div>
+                            <span className="text-[0.7rem] text-[#858A80] font-mono">{a.actor}</span>
+                        </div>
+                    ))}
                 </div>
             </div>
         </div>

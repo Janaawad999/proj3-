@@ -1,58 +1,60 @@
-import api from './api';
-
 /**
- * Financial Radar Client API Service
+ * AgriPulse Radar / Alerts Service Adapter
  * 
- * Handles fetching proactive alerts, investigation breakdowns,
- * marking alerts as read/dismissed, and manual radar scans.
+ * Bridges legacy radarService calls to the centralized alertService.
  */
+
+import alertService from './api/alertService';
+import { withMockFallback } from './api/config';
+import { INTELLIGENCE_BRIEFS } from './agriPulseData';
+
 const radarService = {
-    /**
-     * Get alerts list with unread counter
-     */
     getAlerts: async (params = {}) => {
-        const response = await api.get('/alerts', { params });
-        return response.data;
+        return alertService.getAlerts(params);
     },
 
-    /**
-     * Get detailed investigation report for a specific alert
-     */
     getInvestigation: async (id) => {
-        const response = await api.get(`/alerts/${id}/investigate`);
-        return response.data;
+        return withMockFallback(
+            async () => {
+                // Real backend endpoint if available
+                const alert = await alertService.getAlerts({ id });
+                return alert;
+            },
+            async () => {
+                const found = INTELLIGENCE_BRIEFS.find(a => a.id === id) || INTELLIGENCE_BRIEFS[0];
+                return {
+                    success: true,
+                    alert: found,
+                    investigation: {
+                        category: { name: found?.pumpId || 'Pump P-04' },
+                        summary: {
+                            percentageIncrease: 42,
+                            difference: 1.34,
+                            currentPeriod: 'Current Operating Shift',
+                            previousPeriod: 'Baseline Nominal'
+                        },
+                        details: found?.finding || 'Vibration anomaly detected in ISO 10816 Zone C.'
+                    }
+                };
+            },
+            `getInvestigation(${id})`
+        );
     },
 
-    /**
-     * Mark an alert as READ
-     */
     markAsRead: async (id) => {
-        const response = await api.patch(`/alerts/${id}/read`);
-        return response.data;
+        return alertService.markAsRead(id);
     },
 
-    /**
-     * Mark all alerts as READ
-     */
     markAllAsRead: async () => {
-        const response = await api.patch('/alerts/read-all');
-        return response.data;
+        return alertService.markAllAsRead();
     },
 
-    /**
-     * Dismiss / Delete an alert
-     */
     dismissAlert: async (id) => {
-        const response = await api.delete(`/alerts/${id}`);
-        return response.data;
+        return alertService.dismissAlert(id);
     },
 
-    /**
-     * Run on-demand Financial Radar analysis scan
-     */
     triggerRadarCheck: async (data = {}) => {
-        const response = await api.post('/radar/check', data);
-        return response.data;
+        return alertService.triggerScan(data);
     }
 };
 

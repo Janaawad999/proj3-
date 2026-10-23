@@ -1,267 +1,225 @@
-# MicroMind Base SAAS Template
+# AgriPulse — Autonomous Pump Telemetry & Precision Agriculture Frontend
 
-> **Build a full SAAS MicroApp in under 10 minutes** with AI-assisted deployment.
+> **AgriPulse** is an industrial-grade precision agriculture and autonomous pump telemetry dashboard built with **React 18** and **Vite**. It provides real-time sensor monitoring, ISO 10816 vibration severity diagnostics, Weibull Remaining Useful Life (RUL) predictive intelligence, YOLOv8 foliar pathology vision scanning, and automated maintenance work orders for large-scale agricultural irrigation sectors.
 
-A modern, full-stack SAAS application template built with **React**, **Node.js**, **PostgreSQL**, and **Prisma**. Features the **Executive Gold** design system, V4 UI SDK, AI Co-Pilots via **MicroMind Core**, multi-tenant SAAS architecture, and comprehensive multi-language support across 5 locales.
-
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
-[![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933?logo=nodedotjs&logoColor=white)](https://nodejs.org)
-[![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=white)](https://react.dev)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14%2B-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![React](https://img.shields.io/badge/React-18.2-61DAFB?logo=react&logoColor=white)](https://react.dev)
+[![Vite](https://img.shields.io/badge/Vite-5.0-646CFF?logo=vite&logoColor=white)](https://vitejs.dev)
+[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.3-38B2AC?logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
+[![Status](https://img.shields.io/badge/Frontend-Ready%20for%20Backend-brightgreen.svg)]()
+[![Mock Mode](https://img.shields.io/badge/Standalone-100%25%20Functional-173F35.svg)]()
 
 ---
 
-## ⚡ What You Get
+## ⚡ Highlights
 
-| Feature | Description |
-|---------|-------------|
-| 🎨 **Executive Gold Design** | Dark/light theme, V4 SDK with 16 premium components, glassmorphism, micro-animations |
-| 🤖 **AI Co-Pilots** | Multi-agent chat with MicroMind Core, Report Bot, SQL dashboards |
-| 🏢 **SAAS Architecture** | Multi-tenancy, subscriptions, quotas, team management, role-based access |
-| 🌍 **5 Languages** | English, Arabic (RTL), French, German, Swahili — add more in minutes |
-| 📁 **Document Management** | AWS S3 integration, file upload/download, media preview, tag-based search |
-| 📊 **Analytics Engine** | SQL Dashboard Builder, AI-powered reports, chart exports (PNG/CSV) |
-| 🔐 **Auth & Security** | JWT auth, 4 roles (Admin/Manager/User/Viewer), protected routes, session management |
-| 📚 **Built-in Docs Hub** | 18 documentation files accessible at `/docs` inside your app |
-| 🚀 **Go-to-Market Tools** | AI prompt guides for websites, marketing materials, and sales flyers |
+- **100% Standalone Functionality**: Runs out of the box with realistic industrial mock telemetry. **No backend or database required** to run, demo, test, or evaluate all UI features.
+- **Backend-Ready Architecture**: Clean, centralized API service layer (`client/src/services/api/`) with standardized Axios interceptors, JWT token auto-injection, unified error handling, and a 1-flag toggle between mock data and real APIs.
+- **Fail-Safe Fallbacks**: Uses `withMockFallback()` to catch network disconnects gracefully during active backend development without white-screening or crashing.
+- **Living Intelligence Design**: Styled with the AgriPulse palette: Deep Forest Green (`#173F35`), Fresh Lime (`#C7F36B`), Ivory (`#F6F5EF`), and industrial status alerts. Fully responsive across desktop, tablet, and mobile.
+- **Full Backend Integration Specification**: Complete REST contract documented in [BACKEND_INTEGRATION.md](./BACKEND_INTEGRATION.md).
 
 ---
 
 ## 🚀 Quick Start
 
-> **New to MicroMind?** See **[QUICK_START.md](./QUICK_START.md)** for the full AI-assisted 10-prompt deployment guide.
-
 ### Prerequisites
+- **Node.js** 18+ (tested on Node v20/v24)
+- **npm** 9+
 
-- **Node.js** 18+ and npm
-- **PostgreSQL** 14+
-- **An AI-enabled IDE** — Google Antigravity (recommended), Cursor, or VS Code + Copilot
-- **MicroMind Core keys** — Get yours at [yourapp.aimicromind.com](https://yourapp.aimicromind.com)
-
-### Setup in 5 Steps
+### Running the Frontend
 
 ```bash
-# 1. Clone the repository
-git clone https://github.com/aimicromind/base-template.git
-cd MicroMind-Base-Template
+# 1. Navigate to the client directory
+cd client
 
-# 2. Install dependencies
-cd client && npm install
-cd ../server && npm install
+# 2. Install dependencies (if not already installed)
+npm install
 
-# 3. Configure environment
-cp .env.example .env
-# Edit .env with your database URL, AI keys, and S3 credentials
-
-# 4. Initialize database
-npx prisma migrate dev --name init
-npx prisma generate
-npm run prisma:seed
-
-# 5. Start development servers
-npm run dev                # Backend on port 3000
-cd ../client && npm run dev  # Frontend on port 5173
+# 3. Start the Vite development server
+npm run dev
 ```
 
-**Open** <http://localhost:5173> and login with `admin@micromind.com` / `admin123`
+Open your browser to `http://localhost:5173`.
 
-> ⚠️ **Change default credentials in production!**
+### 🔑 Demo Login
+When prompted at the login screen, click **"1-Tap Demo: Lead Engineer"** or sign in with:
+- **Email**: `tariq@agripulse.io`
+- **Role**: Lead Reliability Engineer (Al-Waha Sector Alpha)
+
+---
+
+## ⚙️ Configuration: Mock Mode vs Real Backend
+
+AgriPulse includes an environment switch in `client/.env` (or repository root `.env`):
+
+```bash
+# Set to 'true' to run independently using rich industrial mock telemetry
+# Set to 'false' to connect to a live backend API server
+VITE_USE_MOCK_DATA=true
+
+# Base URL for the live backend API
+VITE_API_BASE_URL=http://localhost:8000/api/v1
+
+# AI Diagnostics provider (mock | backend | openai)
+VITE_AI_PROVIDER=mock
+```
+
+### Transitioning to a Live Backend:
+1. Copy `.env.example` to `.env`:
+   ```bash
+   cp client/.env.example client/.env
+   ```
+2. Set `VITE_USE_MOCK_DATA=false`
+3. Update `VITE_API_BASE_URL` to point to your backend server (e.g., `http://localhost:8000/api/v1`)
+4. Restart Vite (`npm run dev`)
+
+> **Note on Fail-Safe Development**: If `VITE_USE_MOCK_DATA=false` but the backend is temporarily offline or returns a network error, AgriPulse falls back to mock data transparently, keeping the interface usable while backend routes are under construction.
 
 ---
 
 ## 📁 Project Structure
 
 ```
-MicroMind-Base-Template/
-├── client/                    # React frontend
-│   ├── src/
-│   │   ├── sdk/              # V4 UI Component Library (16 components)
-│   │   ├── components/       # App components
-│   │   ├── pages/            # Page components
-│   │   ├── services/         # API clients
-│   │   └── locales/          # i18n translations (5 languages)
-│   └── public/
-│       └── docs/             # 18 documentation markdown files
-│
-├── server/                    # Node.js backend
-│   ├── src/
-│   │   ├── routes/           # API routes
-│   │   ├── controllers/      # Business logic
-│   │   └── middleware/       # Auth, validation, error handling
-│   ├── prisma/
-│   │   ├── schema.prisma     # Database schema
-│   │   └── seed.js           # Demo data
-│   └── .env.example          # Environment template
-│
-├── .ai/                       # AI constitution (coding standards)
-├── QUICK_START.md             # 10-prompt deployment guide
-├── CONTRIBUTING.md            # How to contribute
-├── CHANGELOG.md               # Release history
-├── LICENSE                    # Apache 2.0
-├── NOTICE                     # Attribution
-└── README.md                  # This file
+proj3/
+├── BACKEND_INTEGRATION.md      # Complete REST API specification & contracts
+├── README.md                   # This documentation
+├── .env.example                # Root environment template
+└── client/
+    ├── .env.example            # Client environment template
+    ├── package.json            # Client dependencies & scripts
+    ├── vite.config.js          # Vite build & proxy configuration
+    ├── tailwind.config.js      # AgriPulse color palette & typography
+    └── src/
+        ├── App.jsx             # Route definitions & layout wrappers
+        ├── main.jsx            # React root mount
+        ├── components/         # Reusable UI widgets
+        │   ├── TopNavbar.jsx   # Header with breadcrumbs & status pill
+        │   ├── MobileDock.jsx  # Floating thumb-friendly bottom nav
+        │   ├── Sidebar.jsx     # Desktop navigation drawer
+        │   └── ...
+        ├── pages/              # Application views
+        │   ├── HomePage.jsx                 # Executive telemetry dashboard
+        │   ├── LiveOperationsPage.jsx      # Real-time pump telemetry matrix
+        │   ├── PumpAssetsPage.jsx          # Asset catalog & pump details
+        │   ├── PredictiveIntelligencePage.jsx # Weibull RUL & FFT spectrum
+        │   ├── MaintenancePage.jsx         # Work orders & dispatch modal
+        │   ├── FieldVisionPage.jsx         # Foliar pathology scan & YOLOv8
+        │   ├── AIDiagnosticsPage.jsx       # Agronomic AI copilot
+        │   ├── SettingsPage.jsx            # Thresholds & notifications
+        │   └── LoginScreen.jsx             # Authentication view
+        ├── services/
+        │   ├── api.js          # Backward-compatibility export layer
+        │   └── api/            # Centralized API Architecture
+        │       ├── index.js             # Unified services export barrel
+        │       ├── config.js            # Base URL, mock toggles & fallback
+        │       ├── endpoints.js         # Canonical REST routes
+        │       ├── apiClient.js         # Axios instance & interceptors
+        │       ├── pumpService.js       # Pumps catalog & telemetry
+        │       ├── alertService.js      # Critical alarm streams
+        │       ├── workOrderService.js   # Maintenance work orders
+        │       ├── assistantService.js  # AI chat copilot
+        │       ├── cropScanService.js   # Image vision diagnostics
+        │       ├── dashboardService.js  # System metrics & health scores
+        │       ├── settingsService.js   # System preferences
+        │       └── authService.js       # Login, logout & session tokens
+        └── mocks/              # Standalone Mock Data Layer
+            ├── mockData.js     # Curated industrial datasets (18 pumps, sectors)
+            └── mockHandlers.js # Async simulation handlers with delay & state
 ```
 
 ---
 
-## 🗄️ Database Schema
+## 🔌 API Service Architecture
 
-**Core Models:**
+All backend communication is centralized in `client/src/services/api/`:
 
-| Model | Purpose |
-|-------|---------|
-| User | Authentication & user management with roles |
-| Session | JWT session tracking |
-| Dashboard | SQL analytics dashboards |
-| Report | AI-generated reports |
-| Document | File management with S3 |
-| ChatHistory | AI conversation logs |
+| Module | Primary Endpoints | Responsibilities |
+|---|---|---|
+| [`apiClient.js`](file:///Users/janamac/Desktop/proj3/client/src/services/api/apiClient.js) | Global | Axios instance with JWT Bearer auto-injection, 401 handling, and normalized error messages. |
+| [`pumpService.js`](file:///Users/janamac/Desktop/proj3/client/src/services/api/pumpService.js) | `/pumps`, `/pumps/:id` | Lists pumps, filters by sector/status, queries telemetry and Weibull health curves. |
+| [`alertService.js`](file:///Users/janamac/Desktop/proj3/client/src/services/api/alertService.js) | `/alerts`, `/alerts/:id/acknowledge` | Retrieves active ISO vibration warnings and emergency telemetry triggers. |
+| [`workOrderService.js`](file:///Users/janamac/Desktop/proj3/client/src/services/api/workOrderService.js) | `/work-orders` | Fetches maintenance work orders and submits new maintenance tickets. |
+| [`cropScanService.js`](file:///Users/janamac/Desktop/proj3/client/src/services/api/cropScanService.js) | `/crops/analyze` | Handles multipart image uploads for foliar leaf pathology detection. |
+| [`assistantService.js`](file:///Users/janamac/Desktop/proj3/client/src/services/api/assistantService.js) | `/assistant/chat` | AI Copilot conversational queries with domain grounding. |
+| [`dashboardService.js`](file:///Users/janamac/Desktop/proj3/client/src/services/api/dashboardService.js) | `/dashboard/summary`, `/dashboard/flow-timeseries` | Aggregated metrics, sector flow timeseries, and efficiency scores. |
+| [`settingsService.js`](file:///Users/janamac/Desktop/proj3/client/src/services/api/settingsService.js) | `/settings` | Vibration thresholds, email notification toggles, and sync intervals. |
+| [`authService.js`](file:///Users/janamac/Desktop/proj3/client/src/services/api/authService.js) | `/auth/login`, `/auth/me` | User authentication, token persistence, and profile details. |
 
-See `server/prisma/schema.prisma` for the full schema.
-
----
-
-## 🎨 UI Component Library (V4 SDK)
-
-**16 premium components** with Executive Gold theming:
-
-```
-MMButton, MMCard, MMInput, MMSelect, MMModal, MMTable,
-MMTabs, MMBadge, MMSwitch, MMCheckbox, MMRadio, MMSpinner,
-MMTooltip, MMAlert, MMDrawer, MMTextarea, MMPagination
-```
-
-**Modules:** MMMap, MMChart, MMFileImport
-
-**Usage:**
-
-```jsx
-import { MMButton, MMCard } from '@sdk';
-
-<MMCard title="My Feature">
-  <MMButton variant="primary">Get Started</MMButton>
-</MMCard>
-```
-
-See **[V4_SDK_REFERENCE.md](./V4_SDK_REFERENCE.md)** for full API documentation.
+For detailed request/response schemas, JSON payloads, query parameters, and field requirements, see **[BACKEND_INTEGRATION.md](./BACKEND_INTEGRATION.md)**.
 
 ---
 
-## 🌐 Multi-Language Support
+## 🖥️ Screen & Module Capabilities
 
-| Language | Code | Direction |
-|----------|------|-----------|
-| English | `en` | LTR (default) |
-| Arabic | `ar` | RTL |
-| French | `fr` | LTR |
-| German | `de` | LTR |
-| Swahili | `sw` | LTR |
+1. **Executive Dashboard (`/`)**:
+   - Fleet Health index, active pump count, total energy consumption, and aggregated water throughput.
+   - 24-hour sector flow comparison chart (Recharts).
+   - Real-time Alert stream with ISO 10816 severity levels.
 
-**Add a new language:**
+2. **Live Operations (`/live`)**:
+   - Real-time telemetry matrix of 18 pumps across Al-Waha Sectors Alpha, Beta, and Gamma.
+   - Metrics: Vibration RMS (mm/s), RPM, Pressure (bar), Flow Rate (m³/h), Bearing Temperature (°C).
+   - Sector filtering, status chips, and one-click diagnostics.
 
-1. Create `client/src/locales/{lang}.json`
-2. Copy keys from `en.json` and translate
-3. Register in `client/src/i18n.js`
+3. **Pump Assets (`/pumps`)**:
+   - Visual catalog cards for Grundfos NK / KSB MegaCPK centrifugal pumps.
+   - Search filter by pump name, serial number, or model.
+   - Detailed modal displaying operating specs, maintenance records, and sensor status.
 
----
+4. **Predictive Intelligence (`/predictive`)**:
+   - Weibull Remaining Useful Life (RUL) survival curves with 90-day time horizons.
+   - Fast Fourier Transform (FFT) vibration spectrum detecting early bearing race defects and cavitation.
 
-## 📖 Documentation
+5. **Maintenance & Work Orders (`/maintenance`)**:
+   - Kanban / table view of open, in-progress, and resolved work orders.
+   - Modal for dispatching new work orders with priority (P1 Critical to P4 Routine) and technician assignment.
+   - Form validation, loading spinners, and empty states.
 
-All documentation is available at **`/docs`** inside your running app, or as markdown files:
+6. **Field Vision (`/vision`)**:
+   - Drag-and-drop foliar pathology leaf scanner.
+   - AI bounding box visualization (Leaf Rust, Powdery Mildew, Early Blight).
+   - Agronomic treatment recommendations and severity scoring.
 
-### Getting Started
+7. **AI Agronomic Diagnostics (`/ai`)**:
+   - Domain-grounded chatbot trained on ISO 10816 vibration standards and industrial pump manuals.
+   - Preset quick queries (e.g., "Analyze Sector Alpha vibration spike", "Explain bearing fault frequency").
 
-- **[QUICK_START.md](./QUICK_START.md)** — AI-assisted 10-prompt deployment guide
-- **[SETUP.md](./SETUP.md)** — Detailed setup instructions
-- **[DEPLOYMENT_INSTRUCTIONS.md](./DEPLOYMENT_INSTRUCTIONS.md)** — Step-by-step environment setup
-- **[EXTENDING_YOUR_APP.md](./client/public/docs/EXTENDING_YOUR_APP.md)** — Build pages with AI prompt sequences
-
-### Architecture & SDKs
-
-- **[V4_SDK_REFERENCE.md](./V4_SDK_REFERENCE.md)** — 16 frontend components
-- **[BACKEND_SDK_AGENTS_GUIDE.md](./BACKEND_SDK_AGENTS_GUIDE.md)** — Server-side SDK
-- **[AI_AGENTS_GUIDE.md](./AI_AGENTS_GUIDE.md)** — MicroMind Core AI integration
-- **[SAAS.md](./SAAS.md)** — Multi-tenancy, subscriptions, quotas
-- **[BRANDING.md](./BRANDING.md)** — Customize colors, logos, typography
-
-### Deployment & Go-to-Market
-
-- **[DEPLOYMENT.md](./DEPLOYMENT.md)** — Production deployment (Vercel, AWS, DO, VPS)
-- **[WEBSITE_AND_MARKETING.md](./client/public/docs/WEBSITE_AND_MARKETING.md)** — Build marketing sites with AI
-- **[SALES_FLYERS.md](./client/public/docs/SALES_FLYERS.md)** — Create print-ready sales materials
-
-### Example Apps
-
-- Credit Control, Order Cycle, OTax, TeamSync, Oracle ERP Integration
+8. **System Settings (`/settings`)**:
+   - Configurable alert trigger thresholds (Vibration warning/critical, Temp limits).
+   - Notification dispatch settings and telemetry poll frequency.
+   - Form validation and dynamic save notifications.
 
 ---
 
-## 🔧 Tech Stack
+## 🎨 Design System & Theme Specifications
 
-| Layer | Technologies |
-|-------|-------------|
-| **Frontend** | React 18, Vite, React Router, i18next, Axios, Lucide Icons |
-| **Backend** | Node.js, Express, Prisma ORM, JWT, bcrypt, Socket.IO |
-| **Database** | PostgreSQL 14+ |
-| **AI Engine** | MicroMind Core (Flowise-based), multi-agent orchestration |
-| **Storage** | AWS S3 (optional) |
-| **Design** | Executive Gold theme, V4 SDK (16 components) |
-
----
-
-## 🛠️ Scripts
-
-### Client
-
-```bash
-npm run dev          # Start dev server (Vite)
-npm run build        # Build for production
-npm run preview      # Preview production build
-```
-
-### Server
-
-```bash
-npm run dev               # Start with nodemon
-npm start                 # Production server
-npm run prisma:generate   # Generate Prisma client
-npm run prisma:migrate    # Run migrations
-npm run prisma:seed       # Seed demo data
-npm run prisma:studio     # Open Prisma Studio
-```
+- **Background Canvas**: `#F6F5EF` (Warm Ivory)
+- **Primary Industrial Accent**: `#173F35` (Deep Forest Green)
+- **Living Intelligence Accent**: `#C7F36B` (Fresh Lime)
+- **Warning & Critical Alerts**: `#F59E0B` (Amber Warning), `#EF4444` (Critical Red)
+- **Card Surfaces**: Pure White `#FFFFFF` with soft borders (`border-[#173F35]/10`) and subtle shadows.
+- **Responsive Layout**:
+  - Desktop: Collapsible sidebar navigation + industrial telemetry navbar with connection status.
+  - Mobile & Tablet: Fixed top breadcrumb bar + thumb-friendly floating bottom dock (`MobileDock.jsx`).
 
 ---
 
-## 🤝 Contributing
+## 🛠️ Available Scripts
 
-We welcome contributions! Please see **[CONTRIBUTING.md](./CONTRIBUTING.md)** for guidelines.
+Run from the `client/` directory:
 
-**Quick overview:**
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+| Command | Action |
+|---|---|
+| `npm run dev` | Starts Vite dev server at `http://localhost:5173` with HMR |
+| `npm run build` | Bundles and minifies production assets into `dist/` |
+| `npm run preview` | Serves the production build locally for verification |
 
 ---
 
-## 💬 Community
+## 📋 Handover Checklist for the Backend Developer
 
-- 💬 **[Discord](https://discord.gg/aimicromind)** — Chat with the team and other developers
-- 💡 **[GitHub Discussions](https://github.com/aimicromind/base-template/discussions)** — Ask questions and share ideas
-- 🐛 **[GitHub Issues](https://github.com/aimicromind/base-template/issues)** — Report bugs and request features
-- 🌐 **[yourapp.aimicromind.com](https://yourapp.aimicromind.com)** — Get your MicroMind keys
-
----
-
-## 📝 License
-
-This project is licensed under the **Apache License 2.0** — see the [LICENSE](./LICENSE) file for details.
-
-Copyright 2026 AI MicroMind LLC. See [NOTICE](./NOTICE) for third-party attributions.
-
----
-
-**Happy building! 🚀**
+- [x] Read [BACKEND_INTEGRATION.md](./BACKEND_INTEGRATION.md) for endpoint paths, methods, and expected JSON structures.
+- [x] Implement CORS headers allowing requests from `http://localhost:5173`.
+- [x] Use `Authorization: Bearer <token>` for authenticated endpoints.
+- [x] Set `VITE_USE_MOCK_DATA=false` in `.env` to test endpoints with live data.
+- [x] Follow the standardized JSON response wrapper `{ "success": true, "data": { ... } }`.

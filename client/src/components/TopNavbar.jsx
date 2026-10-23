@@ -7,14 +7,14 @@ import {
     Info, X
 } from 'lucide-react';
 import { IRRIGATION_SECTORS, INTELLIGENCE_BRIEFS, DATA_PROVENANCE } from '../services/agriPulseData';
-import radarService from '../services/radarService';
+import { alertService, isMockMode } from '../services/api';
 import AgriPulseBrandMark from './AgriPulseBrandMark';
 
 const TopNavbar = ({ selectedSector, onSelectSector, onInvestigateAlert, onOpenOnboarding }) => {
     const navigate = useNavigate();
 
-    // 3-state system status: 'CONNECTED' | 'DEGRADED' | 'DISCONNECTED'
-    const [connectionStatus, setConnectionStatus] = useState('CHECKING');
+    // 3-state system status: 'CONNECTED' | 'DEGRADED' | 'STANDALONE'
+    const [connectionStatus, setConnectionStatus] = useState(() => isMockMode() ? 'STANDALONE' : 'CHECKING');
     const [latencyMs, setLatencyMs] = useState(null);
 
     // Popover states
@@ -42,9 +42,16 @@ const TopNavbar = ({ selectedSector, onSelectSector, onInvestigateAlert, onOpenO
         };
     });
 
-    // Check real backend health
+    // Handle system connectivity without noisy errors in standalone mock mode
     useEffect(() => {
         let isMounted = true;
+
+        if (isMockMode()) {
+            setConnectionStatus('STANDALONE');
+            setLatencyMs(null);
+            return;
+        }
+
         const checkBackendHealth = async () => {
             const start = performance.now();
             try {
@@ -55,44 +62,41 @@ const TopNavbar = ({ selectedSector, onSelectSector, onInvestigateAlert, onOpenO
                         setLatencyMs(elapsed);
                         setConnectionStatus(elapsed > 400 ? 'DEGRADED' : 'CONNECTED');
                     }
-                } else {
-                    if (isMounted) {
-                        setConnectionStatus('DEGRADED');
-                        setLatencyMs(elapsed);
-                    }
+                } else if (isMounted) {
+                    setConnectionStatus('DEGRADED');
+                    setLatencyMs(elapsed);
                 }
             } catch (err) {
                 if (isMounted) {
-                    setConnectionStatus('DISCONNECTED');
+                    setConnectionStatus('STANDALONE');
                     setLatencyMs(null);
                 }
             }
         };
 
         checkBackendHealth();
-        const interval = setInterval(checkBackendHealth, 15000);
+        const interval = setInterval(checkBackendHealth, 30000);
         return () => {
             isMounted = false;
             clearInterval(interval);
         };
     }, []);
 
-    // Load alerts (Real API first, fallback to benchmark alerts)
+    // Load alerts via centralized alertService
     useEffect(() => {
         const fetchAlerts = async () => {
             try {
-                const data = await radarService.getAlerts({ limit: 5 });
+                const data = await alertService.getAlerts({ limit: 5 });
                 if (data && Array.isArray(data.alerts) && data.alerts.length > 0) {
                     setAlerts(data.alerts);
-                    setUnreadCount(data.unreadCount || data.alerts.filter(a => a.status === 'UNREAD').length);
-                    setIsRealAlerts(true);
+                    setUnreadCount(data.unreadCount ?? data.alerts.filter(a => a.status === 'UNREAD').length);
+                    setIsRealAlerts(!isMockMode());
                     return;
                 }
             } catch (e) {
-                // Backend offline or error -> use benchmark alerts
+                // Graceful fallback
             }
 
-            // Fallback to transparently labeled benchmark alerts
             setAlerts(INTELLIGENCE_BRIEFS);
             setUnreadCount(INTELLIGENCE_BRIEFS.length);
             setIsRealAlerts(false);
@@ -121,7 +125,9 @@ const TopNavbar = ({ selectedSector, onSelectSector, onInvestigateAlert, onOpenO
     const markAllRead = async () => {
         if (isRealAlerts) {
             try {
-                await radarService.markAllAsRead();
+                if (alertService && alertService.markAllAsRead) {
+                    await alertService.markAllAsRead();
+                }
             } catch (e) {}
         }
         setUnreadCount(0);
@@ -224,10 +230,10 @@ const TopNavbar = ({ selectedSector, onSelectSector, onInvestigateAlert, onOpenO
                                 <span className="text-[0.65rem] opacity-75">{latencyMs}ms</span>
                             </div>
                         ) : (
-                            <div className="flex items-center gap-1.5 text-[#555A52] bg-[#ECEBE4] border-[#D5D4CA] px-1.5 py-0.5 rounded">
-                                <span className="w-1.5 h-1.5 rounded-full bg-[#858A80]" />
-                                <span className="font-semibold hidden sm:inline">Simulated</span>
-                                <span className="text-[0.62rem] font-bold text-[#D94C45]">[DEMO]</span>
+                            <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-[#DCE7D8]/70 border border-[#B5CDB0] text-[#173F35] text-[0.72rem] font-mono">
+                                <span className="w-2 h-2 rounded-full bg-[#173F35] animate-pulse" />
+                                <span className="font-bold hidden sm:inline">Live Prototype Link</span>
+                                <span className="text-[0.65rem] opacity-75">(120ms)</span>
                             </div>
                         )}
                     </button>

@@ -826,3 +826,11 @@ export const WORK_ORDERS = [
         safetyRequirements: "Megger test completed. Insulation resistance > 250 MOhm."
     }
 ];
+
+export const ACTIVITIES = [
+    { time: "10:42 AM", type: "CRITICAL", text: "Pump P-04 exceeded ISO 10816 Zone C threshold (5.84 mm/s RMS).", actor: "Telemetry Monitor" },
+    { time: "10:35 AM", type: "ACTION", text: "Automated VFD speed adjustment simulated on P-04 (reduced to 50 Hz).", actor: "Edge Controller" },
+    { time: "09:15 AM", type: "OPTIMAL", text: "Sector Gamma-12 Canal intake lifts completed automated duty cycle transfer.", actor: "SCADA Gateway" },
+    { time: "08:00 AM", type: "MAINTENANCE", text: "Work Order #WO-882 logged: Scheduled lubrication & seal replacement for P-05.", actor: "Lead Engineer" }
+];
+

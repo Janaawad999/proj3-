@@ -5,28 +5,41 @@ import {
     RefreshCw, ArrowRight, Layers, FileImage
 } from 'lucide-react';
 import { FIELD_VISION_SAMPLES, DATA_PROVENANCE } from '../services/agriPulseData';
+import { cropScanService } from '../services/api';
 
 const FieldVisionPage = () => {
     // Current sample index
     const [selectedSampleIndex, setSelectedSampleIndex] = useState(0);
     const [showAnnotations, setShowAnnotations] = useState(true);
     const [uploadedImage, setUploadedImage] = useState(null);
+    const [analysisResult, setAnalysisResult] = useState(null);
     const [isAnalyzing, setIsAnalyzing] = useState(false);
+    const [error, setError] = useState(null);
     const fileInputRef = useRef(null);
 
     const currentSample = FIELD_VISION_SAMPLES[selectedSampleIndex];
+    const activeData = uploadedImage && analysisResult ? analysisResult : currentSample;
 
     const handleFileUpload = (e) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
         const reader = new FileReader();
-        reader.onload = (event) => {
-            setIsAnalyzing(true);
+        reader.onload = async (event) => {
             setUploadedImage(event.target.result);
-            setTimeout(() => {
+            setIsAnalyzing(true);
+            setError(null);
+
+            try {
+                const response = await cropScanService.analyzeCropImage(file);
+                const sample = response.sample || response.data || response;
+                setAnalysisResult(sample);
+            } catch (err) {
+                console.warn('Crop scan failed:', err);
+                setError(err.userMessage || 'Failed to complete vision inference');
+            } finally {
                 setIsAnalyzing(false);
-            }, 1200);
+            }
         };
         reader.readAsDataURL(file);
     };
@@ -146,16 +159,30 @@ const FieldVisionPage = () => {
                                     alt="Uploaded Field" 
                                     className="w-full h-full object-cover"
                                 />
-                                {showAnnotations && (
+                                {showAnnotations && activeData?.detections?.map((det) => (
                                     <div 
-                                        className="absolute border-2 border-[#E7A944] bg-[#E7A944]/20 rounded p-1"
-                                        style={{ top: '25%', left: '20%', width: '50%', height: '50%' }}
+                                        key={det.id}
+                                        className="absolute border-2 rounded p-1 transition-all"
+                                        style={{ 
+                                            borderColor: det.color,
+                                            backgroundColor: `${det.color}25`,
+                                            top: `${det.box?.y || 25}%`, 
+                                            left: `${det.box?.x || 20}%`, 
+                                            width: `${det.box?.width || 50}%`, 
+                                            height: `${det.box?.height || 50}%` 
+                                        }}
                                     >
-                                        <span className="text-[0.65rem] font-bold font-mono bg-[#E7A944] text-black px-1.5 py-0.5 rounded">
-                                            Water Stress & Leaf Wilting (91.4%)
+                                        <span 
+                                            className="text-[0.65rem] font-bold font-mono px-1.5 py-0.5 rounded shadow-xs"
+                                            style={{
+                                                backgroundColor: det.color,
+                                                color: det.color === '#C7F36B' ? '#173F35' : '#FFFFFF'
+                                            }}
+                                        >
+                                            {det.label} ({det.confidence}%)
                                         </span>
                                     </div>
-                                )}
+                                ))}
                             </div>
                         ) : (
                             <div className="relative w-full h-full bg-gradient-to-br from-[#173F35] to-[#102D27] flex items-center justify-center p-6">
@@ -176,12 +203,12 @@ const FieldVisionPage = () => {
 
                                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                                     <span className="font-mono text-xs text-white/50 tracking-wider">
-                                        [{currentSample.imagePlaceholderText.toUpperCase()}]
+                                        [{activeData.imagePlaceholderText?.toUpperCase() || 'FOLJAR CANOPY INSPECTION'}]
                                     </span>
                                 </div>
 
                                 {/* Annotated Bounding Boxes */}
-                                {showAnnotations && currentSample.detections.map((det) => (
+                                {showAnnotations && activeData?.detections?.map((det) => (
                                     <div
                                         key={det.id}
                                         className="absolute rounded border-2 transition-all"
@@ -209,6 +236,18 @@ const FieldVisionPage = () => {
                         )}
                     </div>
 
+                    {error && (
+                        <div className="p-3 bg-[#FDECEC] border border-[#F8B4B1] rounded-lg text-xs text-[#9E1F1A] flex items-center justify-between">
+                            <span>{error}</span>
+                            <button 
+                                onClick={() => setError(null)} 
+                                className="underline font-bold text-[0.68rem]"
+                            >
+                                Dismiss
+                            </button>
+                        </div>
+                    )}
+
                     {/* Canvas Metadata Footnote */}
                     <div className="flex items-center justify-between text-xs text-[#858A80] pt-1">
                         <span>Resolution: 4032 × 3024 RGB • Multi-spectral normalized</span>
@@ -224,20 +263,20 @@ const FieldVisionPage = () => {
                             AGRONOMIC DIAGNOSTIC SHEET
                         </span>
                         <h3 className="text-base font-extrabold text-[#173F35]">
-                            {currentSample.crop}
+                            {activeData.crop}
                         </h3>
                         <div className="text-xs text-[#858A80] mt-0.5">
-                            Target Sector: <strong>{currentSample.sectorId}</strong>
+                            Target Sector: <strong>{activeData.sectorId}</strong>
                         </div>
                     </div>
 
                     {/* Detections List */}
                     <div>
                         <div className="text-xs font-bold text-[#173F35] uppercase tracking-wider mb-2">
-                            Identified Foliar Pathologies ({currentSample.detections.length})
+                            Identified Foliar Pathologies ({activeData.detections?.length || 0})
                         </div>
                         <div className="space-y-2">
-                            {currentSample.detections.map(det => (
+                            {activeData.detections?.map(det => (
                                 <div key={det.id} className="p-3 rounded-md bg-[#F6F5EF] border border-[#E6E5DC] flex items-center justify-between">
                                     <div>
                                         <div className="font-bold text-xs text-[#252B28]">{det.label}</div>
@@ -261,10 +300,10 @@ const FieldVisionPage = () => {
                             Hydraulic Telemetry Correlation
                         </div>
                         <p className="text-[#252B28] leading-relaxed">
-                            {currentSample.hydraulicCorrelation}
+                            {activeData.hydraulicCorrelation}
                         </p>
                         <div className="mt-2 pt-2 border-t border-[#DCE7D8] flex items-center justify-between text-[0.72rem] font-mono font-semibold text-[#173F35]">
-                            <span>Linked Pump: {currentSample.linkedPump}</span>
+                            <span>Linked Pump: {activeData.linkedPump}</span>
                             <span>Sector Pressure: 3.92 bar</span>
                         </div>
                     </div>
@@ -275,7 +314,7 @@ const FieldVisionPage = () => {
                             Prescribed Agronomic Action:
                         </div>
                         <p className="text-[#555A52] leading-relaxed">
-                            {currentSample.action}
+                            {activeData.action}
                         </p>
                     </div>
                 </div>

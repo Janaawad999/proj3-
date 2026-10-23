@@ -1,12 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
     Activity, Search, Filter, AlertTriangle, CheckCircle2, 
     X, Sliders, Play, Square, Gauge, Thermometer, 
-    Zap, Droplets, Info, ShieldAlert, ArrowUpDown
+    Zap, Droplets, Info, ShieldAlert, ArrowUpDown,
+    RefreshCw
 } from 'lucide-react';
 import { SMART_PUMPS, IRRIGATION_SECTORS, DATA_PROVENANCE } from '../services/agriPulseData';
+import { pumpService, dashboardService } from '../services/api';
 
 const LiveOperationsPage = () => {
+    const navigate = useNavigate();
+    const [pumps, setPumps] = useState([]);
+    const [sectors, setSectors] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState('ALL');
     const [sectorFilter, setSectorFilter] = useState('ALL');
@@ -18,8 +27,37 @@ const LiveOperationsPage = () => {
     const [showSafetyModal, setShowSafetyModal] = useState(false);
     const [safetyModalAction, setSafetyModalAction] = useState('');
 
+    const loadData = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const [pumpsRes, sectorsRes] = await Promise.all([
+                pumpService.getPumps(),
+                dashboardService.getSectors()
+            ]);
+            const pumpsList = pumpsRes.data || pumpsRes.pumps || pumpsRes;
+            const sectorsList = sectorsRes.data || sectorsRes;
+            setPumps(Array.isArray(pumpsList) ? pumpsList : SMART_PUMPS);
+            setSectors(Array.isArray(sectorsList) ? sectorsList : IRRIGATION_SECTORS);
+        } catch (err) {
+            console.warn('Failed to load fleet data:', err);
+            setError(err.userMessage || 'Could not load fleet telemetry');
+            setPumps(SMART_PUMPS);
+            setSectors(IRRIGATION_SECTORS);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        loadData();
+    }, []);
+
+    const activePumps = pumps.length > 0 ? pumps : SMART_PUMPS;
+    const activeSectors = sectors.length > 0 ? sectors : IRRIGATION_SECTORS;
+
     // Filter logic
-    const filteredPumps = SMART_PUMPS.filter(p => {
+    const filteredPumps = activePumps.filter(p => {
         const matchesSearch = p.id.toLowerCase().includes(searchQuery.toLowerCase()) || 
                               p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                               p.model.toLowerCase().includes(searchQuery.toLowerCase());
@@ -95,7 +133,7 @@ const LiveOperationsPage = () => {
                             className="px-2.5 py-1.5 rounded border border-[#D8D7CD] bg-white font-medium text-xs text-[#252B28]"
                         >
                             <option value="ALL">All Sectors</option>
-                            {IRRIGATION_SECTORS.map(s => (
+                            {activeSectors.map(s => (
                                 <option key={s.id} value={s.id}>{s.name}</option>
                             ))}
                         </select>
@@ -118,6 +156,16 @@ const LiveOperationsPage = () => {
                 </div>
             </div>
 
+            {error && (
+                <div className="p-3 bg-[#FDECEC] border border-[#F8B4B1] rounded-lg text-xs text-[#9E1F1A] flex items-center justify-between">
+                    <span>{error}</span>
+                    <button onClick={loadData} className="underline font-bold text-xs flex items-center gap-1">
+                        <RefreshCw size={12} />
+                        Retry
+                    </button>
+                </div>
+            )}
+
             {/* Operations Table */}
             <div className="bg-white border border-[#E6E5DC] rounded-lg shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
@@ -137,7 +185,26 @@ const LiveOperationsPage = () => {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-[#F0EFEA] font-mono">
-                            {filteredPumps.map((pump) => {
+                            {loading ? (
+                                [1, 2, 3, 4, 5].map(n => (
+                                    <tr key={n} className="animate-pulse">
+                                        <td colSpan={10} className="p-4 bg-[#FAF9F5]">
+                                            <div className="h-4 bg-[#EFEFE7] rounded w-full" />
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : filteredPumps.length === 0 ? (
+                                <tr>
+                                    <td colSpan={10} className="p-8 text-center text-[#858A80] font-sans">
+                                        <Activity size={28} className="mx-auto mb-2 text-[#858A80]" />
+                                        <div className="font-semibold text-xs text-[#252B28]">No pump telemetry records found</div>
+                                        <div className="text-[0.68rem] text-[#858A80] mt-1">
+                                            No pumps match the selected query or filters.
+                                        </div>
+                                    </td>
+                                </tr>
+                            ) : (
+                                filteredPumps.map((pump) => {
                                 const isCritical = pump.status === 'CRITICAL';
                                 const isWarning = pump.status === 'WARNING';
                                 return (
@@ -198,7 +265,7 @@ const LiveOperationsPage = () => {
                                         </td>
                                     </tr>
                                 );
-                            })}
+                            }))}
                         </tbody>
                     </table>
                 </div>

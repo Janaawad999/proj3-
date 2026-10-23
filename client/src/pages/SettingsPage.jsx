@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
     Settings, Sliders, Bell, ShieldCheck, 
     Save, Check, RefreshCw, Info, Database
 } from 'lucide-react';
+import { settingsService } from '../services/api';
 
 const SettingsPage = () => {
     const [vibrationWarning, setVibrationWarning] = useState('4.5');
@@ -12,11 +13,61 @@ const SettingsPage = () => {
     const [alertEmail, setAlertEmail] = useState('t.mansour@agripulse.ai');
     const [webhookUrl, setWebhookUrl] = useState('https://scada.agripulse.internal/hooks/anomaly');
     const [saved, setSaved] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
 
-    const handleSave = (e) => {
+    useEffect(() => {
+        const loadSettings = async () => {
+            try {
+                const res = await settingsService.getSettings();
+                const data = res.data || res;
+                if (data) {
+                    if (data.vibrationWarning) setVibrationWarning(String(data.vibrationWarning));
+                    if (data.vibrationCritical) setVibrationCritical(String(data.vibrationCritical));
+                    if (data.tempWarning) setTempWarning(String(data.tempWarning));
+                    if (data.samplingRateMs) setSamplingRate(String(data.samplingRateMs));
+                    if (data.alertEmail) setAlertEmail(data.alertEmail);
+                    if (data.webhookUrl) setWebhookUrl(data.webhookUrl);
+                }
+            } catch (err) {
+                console.warn('Could not load server settings, using defaults');
+            }
+        };
+        loadSettings();
+    }, []);
+
+    const handleSave = async (e) => {
         e.preventDefault();
-        setSaved(true);
-        setTimeout(() => setSaved(false), 2500);
+        setErrorMessage('');
+
+        const vibWarn = parseFloat(vibrationWarning);
+        const vibCrit = parseFloat(vibrationCritical);
+        if (isNaN(vibWarn) || isNaN(vibCrit) || vibWarn <= 0 || vibCrit <= 0) {
+            setErrorMessage('Please enter valid positive vibration thresholds.');
+            return;
+        }
+        if (vibWarn >= vibCrit) {
+            setErrorMessage('Zone C warning threshold must be strictly less than Zone D danger threshold.');
+            return;
+        }
+
+        setIsSaving(true);
+        try {
+            await settingsService.updateSettings({
+                vibrationWarning: vibWarn,
+                vibrationCritical: vibCrit,
+                tempWarning: parseFloat(tempWarning) || 75.0,
+                samplingRateMs: parseInt(samplingRate, 10) || 2500,
+                alertEmail,
+                webhookUrl
+            });
+            setSaved(true);
+            setTimeout(() => setSaved(false), 3000);
+        } catch (err) {
+            setErrorMessage(err.userMessage || 'Failed to save settings.');
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     return (
@@ -40,6 +91,15 @@ const SettingsPage = () => {
                 <div className="p-3 bg-[#DCE7D8] text-[#173F35] font-bold text-xs rounded-md flex items-center gap-2">
                     <Check size={16} />
                     <span>Configuration successfully updated and synchronized with local cache.</span>
+                </div>
+            )}
+
+            {errorMessage && (
+                <div className="p-3 bg-[#FDECEC] border border-[#F8B4B1] rounded-md text-[#9E1F1A] font-medium text-xs flex items-center justify-between">
+                    <span>{errorMessage}</span>
+                    <button onClick={() => setErrorMessage('')} className="underline text-[0.68rem] font-bold">
+                        Dismiss
+                    </button>
                 </div>
             )}
 
@@ -152,10 +212,11 @@ const SettingsPage = () => {
                 <div className="flex justify-end pt-2">
                     <button
                         type="submit"
-                        className="agri-btn agri-btn-primary px-6 py-2.5 text-xs font-bold"
+                        disabled={isSaving}
+                        className="agri-btn agri-btn-primary px-6 py-2.5 text-xs font-bold flex items-center gap-2 disabled:opacity-60"
                     >
-                        <Save size={15} />
-                        <span>Save Calibration Parameters</span>
+                        {isSaving ? <RefreshCw size={14} className="animate-spin" /> : <Save size={15} />}
+                        <span>{isSaving ? 'Calibrating System...' : 'Save Calibration Parameters'}</span>
                     </button>
                 </div>
             </form>

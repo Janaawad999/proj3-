@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
     BrainCircuit, AlertTriangle, Clock, ArrowRight, 
     Sparkles, ShieldAlert, CheckCircle2, ChevronRight,
-    Wrench, Calendar, Info, Layers, Activity
+    Wrench, Calendar, Info, Layers, Activity, RefreshCw
 } from 'lucide-react';
 import { 
     ResponsiveContainer, LineChart, Line, XAxis, YAxis, 
@@ -13,16 +13,49 @@ import {
     SMART_PUMPS, PUMP_04_RUL_DECAY_CURVE, 
     DATA_PROVENANCE, WORK_ORDERS 
 } from '../services/agriPulseData';
+import { pumpService } from '../services/api';
 
 const PredictiveIntelligencePage = () => {
     const navigate = useNavigate();
+    const [pumps, setPumps] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    const loadPumps = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const res = await pumpService.getPumps();
+            const list = res?.data || res?.pumps || res;
+            if (Array.isArray(list) && list.length > 0) {
+                setPumps(list);
+            } else {
+                setPumps(SMART_PUMPS);
+            }
+        } catch (err) {
+            console.warn('Failed to load predictive telemetry:', err);
+            setError(err?.userMessage || 'Could not load predictive telemetry');
+            setPumps(SMART_PUMPS);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        loadPumps();
+    }, []);
+
+    const activePumps = (Array.isArray(pumps) && pumps.length > 0) ? pumps : SMART_PUMPS;
 
     // Ranked at-risk pumps (Urgency sorted)
-    const atRiskPumps = SMART_PUMPS
+    const atRiskPumps = activePumps
         .filter(p => p.status === 'CRITICAL' || p.status === 'WARNING')
-        .sort((a, b) => a.rulHours - b.rulHours);
+        .sort((a, b) => (a.rulHours ?? 9999) - (b.rulHours ?? 9999));
 
-    const [selectedPump, setSelectedPump] = useState(atRiskPumps[0] || SMART_PUMPS[0]);
+    const [selectedPumpId, setSelectedPumpId] = useState('P-04');
+    const fallbackPump = SMART_PUMPS.find(p => p.id === 'P-04') || activePumps[0] || {};
+    const selectedPump = activePumps.find(p => p.id === selectedPumpId) || atRiskPumps[0] || activePumps[0] || fallbackPump;
+    const setSelectedPump = (p) => setSelectedPumpId(p?.id || 'P-04');
 
     // Timeline intervention items
     const interventions = [
@@ -66,7 +99,7 @@ const PredictiveIntelligencePage = () => {
                             RELIABILITY FORESIGHT WORKSPACE
                         </span>
                         <span className="text-[0.68rem] font-mono px-2 py-0.5 rounded bg-[#ECEBE4] text-[#555A52] border border-[#D5D4CA]">
-                            {DATA_PROVENANCE.dataSource}
+                            {DATA_PROVENANCE?.dataSource || 'BENCHMARK_FIXTURE'}
                         </span>
                     </div>
                     <h1 className="text-3xl font-extrabold text-[#173F35] tracking-tight">
@@ -95,6 +128,23 @@ const PredictiveIntelligencePage = () => {
                 </div>
             </div>
 
+            {/* Error Notification Banner */}
+            {error && (
+                <div className="p-3 bg-[#FDECEC] border border-[#F8B4B1] rounded-lg text-xs text-[#9E1F1A] flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        <AlertTriangle size={15} />
+                        <span>{error}</span>
+                    </div>
+                    <button 
+                        onClick={loadPumps} 
+                        className="underline font-bold text-xs flex items-center gap-1 hover:text-[#7A1511]"
+                    >
+                        <RefreshCw size={12} />
+                        Retry
+                    </button>
+                </div>
+            )}
+
             {/* Model Provenance Banner */}
             <div className="bg-[#EFEFE7] border border-[#D8D7CD] rounded-md p-3.5 flex items-start gap-3 text-xs text-[#555A52]">
                 <Info size={16} className="text-[#173F35] flex-shrink-0 mt-0.5" />
@@ -112,66 +162,83 @@ const PredictiveIntelligencePage = () => {
                     <div>
                         <div className="flex items-center justify-between pb-3 border-b border-[#F0EFEA]">
                             <h3 className="text-xs font-extrabold tracking-wider text-[#173F35] uppercase">
-                                Ranked At-Risk Assets ({atRiskPumps.length})
+                                Ranked At-Risk Assets ({loading ? '...' : atRiskPumps.length})
                             </h3>
                             <span className="text-[0.68rem] font-mono text-[#D94C45] font-bold">
                                 Sorted by Urgency
                             </span>
                         </div>
 
-                        <div className="divide-y divide-[#F6F5EF] mt-3 space-y-1">
-                            {atRiskPumps.map((p, idx) => {
-                                const isSelected = selectedPump.id === p.id;
-                                return (
-                                    <button
-                                        key={p.id}
-                                        onClick={() => setSelectedPump(p)}
-                                        className={`w-full text-left p-3 rounded-md transition-all ${
-                                            isSelected 
-                                                ? 'bg-[#173F35] text-white shadow-sm' 
-                                                : 'hover:bg-[#F6F5EF] text-[#252B28]'
-                                        }`}
-                                    >
-                                        <div className="flex items-start justify-between">
-                                            <div className="flex items-center gap-2">
-                                                <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[0.65rem] font-bold font-mono ${
-                                                    isSelected ? 'bg-[#C7F36B] text-[#173F35]' : 'bg-[#EFEFE7] text-[#555]'
-                                                }`}>
-                                                    #{idx + 1}
-                                                </span>
-                                                <div>
-                                                    <div className="font-extrabold text-xs">{p.id} — {p.name.split('(')[0]}</div>
-                                                    <div className={`text-[0.68rem] ${isSelected ? 'text-[#DCE7D8]' : 'text-[#858A80]'}`}>
-                                                        {p.model}
+                        {loading ? (
+                            <div className="space-y-3 mt-3">
+                                {[1, 2, 3, 4].map(n => (
+                                    <div key={n} className="p-3 rounded-md bg-[#F6F5EF] animate-pulse space-y-2">
+                                        <div className="h-4 w-3/4 bg-[#E8E7DF] rounded" />
+                                        <div className="h-3 w-1/2 bg-[#E8E7DF] rounded" />
+                                    </div>
+                                ))}
+                            </div>
+                        ) : atRiskPumps.length === 0 ? (
+                            <div className="p-6 text-center text-xs text-[#858A80] space-y-2">
+                                <CheckCircle2 size={24} className="mx-auto text-[#173F35]" />
+                                <div>No critical or warning pump degradation detected.</div>
+                            </div>
+                        ) : (
+                            <div className="divide-y divide-[#F6F5EF] mt-3 space-y-1">
+                                {atRiskPumps.map((p, idx) => {
+                                    const isSelected = (selectedPump?.id || '') === p.id;
+                                    const displayName = p.name ? p.name.split('(')[0] : p.id;
+                                    return (
+                                        <button
+                                            key={p.id}
+                                            onClick={() => setSelectedPump(p)}
+                                            className={`w-full text-left p-3 rounded-md transition-all ${
+                                                isSelected 
+                                                    ? 'bg-[#173F35] text-white shadow-sm' 
+                                                    : 'hover:bg-[#F6F5EF] text-[#252B28]'
+                                            }`}
+                                        >
+                                            <div className="flex items-start justify-between">
+                                                <div className="flex items-center gap-2">
+                                                    <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[0.65rem] font-bold font-mono ${
+                                                        isSelected ? 'bg-[#C7F36B] text-[#173F35]' : 'bg-[#EFEFE7] text-[#555]'
+                                                    }`}>
+                                                        #{idx + 1}
+                                                    </span>
+                                                    <div>
+                                                        <div className="font-extrabold text-xs">{p.id} — {displayName}</div>
+                                                        <div className={`text-[0.68rem] ${isSelected ? 'text-[#DCE7D8]' : 'text-[#858A80]'}`}>
+                                                            {p.model || 'Centrifugal Pump'}
+                                                        </div>
                                                     </div>
                                                 </div>
+
+                                                <span className={`text-[0.65rem] font-bold font-mono px-1.5 py-0.5 rounded ${
+                                                    p.status === 'CRITICAL' 
+                                                        ? 'bg-[#D94C45] text-white' 
+                                                        : 'bg-[#E7A944] text-[#252B28]'
+                                                }`}>
+                                                    {p.status || 'WARNING'}
+                                                </span>
                                             </div>
 
-                                            <span className={`text-[0.65rem] font-bold font-mono px-1.5 py-0.5 rounded ${
-                                                p.status === 'CRITICAL' 
-                                                    ? 'bg-[#D94C45] text-white' 
-                                                    : 'bg-[#E7A944] text-[#252B28]'
-                                            }`}>
-                                                {p.status}
-                                            </span>
-                                        </div>
+                                            <div className={`mt-2 text-xs font-medium ${isSelected ? 'text-[#C7F36B]' : 'text-[#D94C45]'}`}>
+                                                Failure: {p.failureMode || 'Cavitation & Thermal Stress'}
+                                            </div>
 
-                                        <div className={`mt-2 text-xs font-medium ${isSelected ? 'text-[#C7F36B]' : 'text-[#D94C45]'}`}>
-                                            Failure: {p.failureMode}
-                                        </div>
-
-                                        <div className="mt-1.5 flex items-center justify-between text-[0.7rem] font-mono">
-                                            <span className={isSelected ? 'text-[#DCE7D8]' : 'text-[#858A80]'}>
-                                                RUL: <strong className={isSelected ? 'text-white' : 'text-[#252B28]'}>{p.rulHours} Operating Hours</strong>
-                                            </span>
-                                            <span className={isSelected ? 'text-[#C7F36B]' : 'text-[#173F35]'}>
-                                                Health: {p.healthScore}%
-                                            </span>
-                                        </div>
-                                    </button>
-                                );
-                            })}
-                        </div>
+                                            <div className="mt-1.5 flex items-center justify-between text-[0.7rem] font-mono">
+                                                <span className={isSelected ? 'text-[#DCE7D8]' : 'text-[#858A80]'}>
+                                                    RUL: <strong className={isSelected ? 'text-white' : 'text-[#252B28]'}>{p.rulHours ?? '--'} Operating Hours</strong>
+                                                </span>
+                                                <span className={isSelected ? 'text-[#C7F36B]' : 'text-[#173F35]'}>
+                                                    Health: {p.healthScore ?? '--'}%
+                                                </span>
+                                            </div>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        )}
                     </div>
 
                     <div className="mt-4 pt-3 border-t border-[#F0EFEA] text-[0.72rem] text-[#858A80]">
@@ -187,19 +254,19 @@ const PredictiveIntelligencePage = () => {
                             <div>
                                 <div className="flex items-center gap-2">
                                     <h3 className="text-xs font-extrabold tracking-wider text-[#173F35] uppercase">
-                                        Remaining Useful Life (RUL) Curve — {selectedPump.name}
+                                        Remaining Useful Life (RUL) Curve — {selectedPump?.name || 'Selected Asset'}
                                     </h3>
                                     <span className="text-[0.65rem] font-mono px-1.5 py-0.2 rounded bg-[#FDECEC] text-[#D94C45] font-bold">
-                                        CRITICAL WINDOW: {selectedPump.rulWindow}
+                                        CRITICAL WINDOW: {selectedPump?.rulWindow || '38h – 48h operating window'}
                                     </span>
                                 </div>
                                 <p className="text-[0.72rem] text-[#858A80] mt-0.5">
-                                    Weibull Reliability Decay (Health % vs Runtime Hours) • Current Runtime: {selectedPump.cumulativeRuntimeHours}h
+                                    Weibull Reliability Decay (Health % vs Runtime Hours) • Current Runtime: {selectedPump?.cumulativeRuntimeHours ?? 6420}h
                                 </p>
                             </div>
 
                             <span className="text-xs font-mono font-bold text-[#173F35] bg-[#DCE7D8] px-2 py-1 rounded">
-                                {selectedPump.failureMode}
+                                {selectedPump?.failureMode || 'Bearing Degradation'}
                             </span>
                         </div>
 
@@ -252,7 +319,7 @@ const PredictiveIntelligencePage = () => {
                                         stroke="#858A80" 
                                         strokeDasharray="4 4"
                                         strokeWidth={1.5}
-                                        dot={false}
+                                        dot={false} 
                                     />
                                 </AreaChart>
                             </ResponsiveContainer>

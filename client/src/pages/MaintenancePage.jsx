@@ -1,15 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
     Wrench, Plus, CheckCircle2, AlertTriangle, 
-    Clock, User, ShieldAlert, Check, X, Filter
+    Clock, User, ShieldAlert, Check, X, Filter,
+    RefreshCw
 } from 'lucide-react';
 import { WORK_ORDERS, SMART_PUMPS, DATA_PROVENANCE } from '../services/agriPulseData';
-import managerService from '../services/managerService';
+import { workOrderService, pumpService } from '../services/api';
 
 const MaintenancePage = () => {
-    const [workOrders, setWorkOrders] = useState(WORK_ORDERS);
+    const [workOrders, setWorkOrders] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [filterStatus, setFilterStatus] = useState('ALL');
     const [showCreateModal, setShowCreateModal] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     // Form state
     const [targetPumpId, setTargetPumpId] = useState('P-04');
@@ -18,6 +22,27 @@ const MaintenancePage = () => {
     const [technician, setTechnician] = useState('Tariq Mansour');
     const [downtime, setDowntime] = useState('3.5');
     const [safetyNotes, setSafetyNotes] = useState('LOTO Procedure on 380V Main Breaker required.');
+    const [formError, setFormError] = useState('');
+
+    const fetchOrders = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const res = await workOrderService.getWorkOrders();
+            const list = res.data || res.workOrders || res;
+            setWorkOrders(Array.isArray(list) ? list : WORK_ORDERS);
+        } catch (err) {
+            console.warn('Failed to load work orders:', err);
+            setError(err.userMessage || 'Could not load work orders');
+            setWorkOrders(WORK_ORDERS);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchOrders();
+    }, []);
 
     const filteredOrders = workOrders.filter(wo => {
         if (filterStatus === 'ALL') return true;
@@ -26,34 +51,46 @@ const MaintenancePage = () => {
 
     const handleCreateWorkOrder = async (e) => {
         e.preventDefault();
-        const newOrder = {
-            id: `WO-${Math.floor(100 + Math.random() * 900)}`,
-            pumpId: targetPumpId,
-            title: title || `Service Intervention on ${targetPumpId}`,
-            priority,
-            status: 'SCHEDULED',
-            assignedTechnician: technician,
-            estimatedDowntimeHours: parseFloat(downtime) || 2.0,
-            targetCompletion: 'Within 48h',
-            spareParts: ['Viton O-Ring', 'Replacement Bearing'],
-            safetyRequirements: safetyNotes
-        };
+        setFormError('');
 
-        // Attempt real backend task creation via managerService
-        try {
-            await managerService.createTask({
-                title: newOrder.title,
-                priority: newOrder.priority,
-                assignedTo: newOrder.assignedTechnician,
-                notes: newOrder.safetyRequirements
-            });
-        } catch (err) {
-            console.log('Manager backend task API offline. Retaining local work order.');
+        if (!title.trim()) {
+            setFormError('Please enter a work order title.');
+            return;
         }
 
-        setWorkOrders([newOrder, ...workOrders]);
-        setShowCreateModal(false);
-        setTitle('');
+        const downtimeNum = parseFloat(downtime);
+        if (isNaN(downtimeNum) || downtimeNum <= 0) {
+            setFormError('Please enter a valid estimated downtime in hours.');
+            return;
+        }
+
+        setIsSubmitting(true);
+
+        const newOrder = {
+            pumpId: targetPumpId,
+            title: title.trim(),
+            priority,
+            status: 'SCHEDULED',
+            assignedTechnician: technician.trim() || 'Tariq Mansour',
+            estimatedDowntimeHours: downtimeNum,
+            targetCompletion: 'Within 48h',
+            spareParts: ['Viton O-Ring', 'Replacement Bearing Kit'],
+            safetyRequirements: safetyNotes.trim()
+        };
+
+        try {
+            const res = await workOrderService.createWorkOrder(newOrder);
+            const created = res.data || res;
+            setWorkOrders(prev => [created, ...prev]);
+            setShowCreateModal(false);
+            setTitle('');
+            setFormError('');
+        } catch (err) {
+            console.warn('Failed to dispatch work order:', err);
+            setFormError(err.userMessage || 'Failed to dispatch work order to server.');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -105,21 +142,52 @@ const MaintenancePage = () => {
             </div>
 
             {/* Work Orders Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                {filteredOrders.map(wo => {
-                    const isCritical = wo.priority === 'P1_CRITICAL';
-                    return (
-                        <div 
-                            key={wo.id}
-                            className={`p-5 rounded-lg border bg-white shadow-sm flex flex-col justify-between space-y-4 ${
-                                isCritical ? 'border-[#F8B4B1]' : 'border-[#E6E5DC]'
-                            }`}
-                        >
-                            <div>
-                                <div className="flex items-center justify-between">
-                                    <span className="font-mono text-xs font-extrabold text-[#173F35] bg-[#DCE7D8] px-2 py-0.5 rounded">
-                                        {wo.id} • {wo.pumpId}
-                                    </span>
+            {loading ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                    {[1, 2, 3].map(n => (
+                        <div key={n} className="p-5 rounded-lg border border-[#E6E5DC] bg-white shadow-sm space-y-4 animate-pulse">
+                            <div className="flex justify-between items-center">
+                                <div className="h-5 w-24 bg-[#EFEFE7] rounded" />
+                                <div className="h-5 w-16 bg-[#EFEFE7] rounded" />
+                            </div>
+                            <div className="h-4 w-3/4 bg-[#EFEFE7] rounded mt-2" />
+                            <div className="space-y-2 pt-2">
+                                <div className="h-3 w-1/2 bg-[#EFEFE7] rounded" />
+                                <div className="h-3 w-2/3 bg-[#EFEFE7] rounded" />
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            ) : filteredOrders.length === 0 ? (
+                <div className="bg-white border border-[#E6E5DC] rounded-xl p-8 text-center space-y-3">
+                    <Wrench size={32} className="mx-auto text-[#858A80]" />
+                    <h3 className="font-bold text-sm text-[#252B28]">No Work Orders Found</h3>
+                    <p className="text-xs text-[#858A80] max-w-sm mx-auto">
+                        No maintenance work orders match the current filter "{filterStatus.replace('_', ' ')}".
+                    </p>
+                    <button
+                        onClick={() => setFilterStatus('ALL')}
+                        className="px-3 py-1.5 rounded-lg bg-[#EFEFE7] hover:bg-[#E2E1D9] text-[#173F35] text-xs font-semibold"
+                    >
+                        Show All Orders
+                    </button>
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                    {filteredOrders.map(wo => {
+                        const isCritical = wo.priority === 'P1_CRITICAL';
+                        return (
+                            <div 
+                                key={wo.id}
+                                className={`p-5 rounded-lg border bg-white shadow-sm flex flex-col justify-between space-y-4 ${
+                                    isCritical ? 'border-[#F8B4B1]' : 'border-[#E6E5DC]'
+                                }`}
+                            >
+                                <div>
+                                    <div className="flex items-center justify-between">
+                                        <span className="font-mono text-xs font-extrabold text-[#173F35] bg-[#DCE7D8] px-2 py-0.5 rounded">
+                                            {wo.id} • {wo.pumpId}
+                                        </span>
                                     <span className={`text-[0.65rem] font-bold font-mono px-2 py-0.5 rounded ${
                                         isCritical 
                                             ? 'bg-[#FDECEC] text-[#D94C45]' 
@@ -173,6 +241,7 @@ const MaintenancePage = () => {
                     );
                 })}
             </div>
+            )}
 
             {/* Modal: Create Work Order */}
             {showCreateModal && (
@@ -189,6 +258,12 @@ const MaintenancePage = () => {
                                 <X size={18} />
                             </button>
                         </div>
+
+                        {formError && (
+                            <div className="p-2.5 bg-[#FDECEC] border border-[#F8B4B1] rounded-lg text-xs text-[#9E1F1A]">
+                                {formError}
+                            </div>
+                        )}
 
                         <form onSubmit={handleCreateWorkOrder} className="space-y-3.5 text-xs">
                             <div>
@@ -242,6 +317,30 @@ const MaintenancePage = () => {
                                 </div>
                             </div>
 
+                            <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label className="block font-bold text-[#252B28] mb-1">Estimated Downtime (Hours):</label>
+                                    <input
+                                        type="number"
+                                        step="0.5"
+                                        min="0.5"
+                                        value={downtime}
+                                        onChange={(e) => setDowntime(e.target.value)}
+                                        required
+                                        className="w-full p-2 rounded border border-[#D8D7CD] font-mono"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block font-bold text-[#252B28] mb-1">Target Window:</label>
+                                    <input
+                                        type="text"
+                                        value="Within 48h"
+                                        disabled
+                                        className="w-full p-2 rounded border border-[#E6E5DC] bg-[#FAF9F5] text-[#858A80]"
+                                    />
+                                </div>
+                            </div>
+
                             <div>
                                 <label className="block font-bold text-[#252B28] mb-1">LOTO & Safety Requirements:</label>
                                 <textarea
@@ -262,9 +361,11 @@ const MaintenancePage = () => {
                                 </button>
                                 <button
                                     type="submit"
-                                    className="px-4 py-1.5 rounded bg-[#173F35] text-white font-bold"
+                                    disabled={isSubmitting}
+                                    className="px-4 py-1.5 rounded bg-[#173F35] text-white font-bold flex items-center gap-1.5 disabled:opacity-50"
                                 >
-                                    Dispatch Work Order
+                                    {isSubmitting && <RefreshCw size={13} className="animate-spin" />}
+                                    <span>{isSubmitting ? 'Dispatching...' : 'Dispatch Work Order'}</span>
                                 </button>
                             </div>
                         </form>
