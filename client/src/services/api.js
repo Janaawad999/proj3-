@@ -29,16 +29,23 @@ api.interceptors.request.use(
     }
 );
 
-// Response interceptor - Handle 401 (unauthorized)
+// Response interceptor - Handle 401 (unauthorized / stale session)
 api.interceptors.response.use(
     (response) => response,
     (error) => {
-        if (error.response && error.response.status === 401) {
-            // Token expired or invalid - clear storage and redirect to login
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            window.location.href = '/login';
+        if (error.response?.status === 401) {
+            const isLoginOrRegister = error.config?.url?.includes('/auth/login') || error.config?.url?.includes('/auth/register');
+            // If not an explicit login attempt that failed credentials, clear stale session and redirect
+            if (!isLoginOrRegister) {
+                console.warn('[API] 401 Unauthorized - Clearing stale token and redirecting to /login');
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                if (window.location.pathname !== '/login') {
+                    window.location.href = '/login';
+                }
+            }
         }
+
         return Promise.reject(error);
     }
 );

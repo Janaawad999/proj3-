@@ -15,7 +15,20 @@ const login = async (username, password, twoFactorToken = null) => {
     }
     return response.data;
 };
+const register = async (name, email, password) => {
+    const response = await api.post('/auth/register', {
+        name,
+        email,
+        password
+    });
 
+    if (response.data.token) {
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+    }
+
+    return response.data;
+};
 const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
@@ -103,6 +116,7 @@ const disable2FA = async (password) => {
 
 export default {
     login,
+    register,
     logout,
     getCurrentUser,
     updateProfile,

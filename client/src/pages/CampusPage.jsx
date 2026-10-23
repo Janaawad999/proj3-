@@ -47,9 +47,9 @@ const styles = {
         textAlign: 'center',
         marginBottom: '3rem',
         padding: '2.5rem 2rem',
-        background: 'linear-gradient(135deg, rgba(224,170,62,0.08) 0%, rgba(224,170,62,0.02) 100%)',
+        background: 'linear-gradient(135deg, rgba(13,82,84,0.08) 0%, rgba(42,171,145,0.04) 100%)',
         borderRadius: '16px',
-        border: '1px solid rgba(224,170,62,0.12)',
+        border: '1px solid rgba(42,171,145,0.2)',
     },
     heroIcon: {
         display: 'inline-flex',
@@ -58,9 +58,10 @@ const styles = {
         width: '64px',
         height: '64px',
         borderRadius: '16px',
-        background: 'linear-gradient(135deg, rgba(224,170,62,0.2) 0%, rgba(224,170,62,0.05) 100%)',
+        background: 'linear-gradient(135deg, #0D5254 0%, #2AAB91 100%)',
         marginBottom: '1.25rem',
-        color: 'var(--primary, #E0AA3E)',
+        color: '#FFFFFF',
+        boxShadow: '0 4px 12px rgba(42,171,145,0.3)',
     },
     heroTitle: {
         fontSize: '2.25rem',
@@ -157,7 +158,7 @@ const styles = {
         lineHeight: 1.5,
     },
     bulletArrow: {
-        color: 'var(--primary, #E0AA3E)',
+        color: '#2AAB91',
         marginTop: '3px',
         flexShrink: 0,
     },
@@ -197,8 +198,8 @@ const styles = {
         width: '36px',
         height: '36px',
         borderRadius: '8px',
-        backgroundColor: 'rgba(224,170,62,0.1)',
-        color: 'var(--primary, #E0AA3E)',
+        backgroundColor: 'rgba(42,171,145,0.12)',
+        color: '#2AAB91',
         flexShrink: 0,
     },
     contactLabel: {
@@ -215,7 +216,7 @@ const styles = {
     },
     contactLink: {
         fontSize: '0.9rem',
-        color: 'var(--primary, #E0AA3E)',
+        color: '#2AAB91',
         textDecoration: 'none',
         display: 'inline-flex',
         alignItems: 'center',
@@ -264,8 +265,8 @@ const styles = {
         letterSpacing: '0.08em',
         padding: '2px 6px',
         borderRadius: '4px',
-        backgroundColor: 'rgba(224,170,62,0.15)',
-        color: 'var(--primary, #E0AA3E)',
+        backgroundColor: 'rgba(42,171,145,0.15)',
+        color: '#2AAB91',
         marginLeft: 'auto',
     },
     cardTitle: {
@@ -287,10 +288,10 @@ const getTracks = (t) => [
         title: t('campus.tracks.aiAgent.title'),
         subtitle: t('campus.tracks.aiAgent.subtitle'),
         audience: t('campus.tracks.aiAgent.audience'),
-        audienceColor: { background: 'rgba(224,170,62,0.12)', color: '#E0AA3E' },
-        iconBg: 'linear-gradient(135deg, rgba(224,170,62,0.2) 0%, rgba(224,170,62,0.05) 100%)',
-        iconColor: '#E0AA3E',
-        accentColor: '#E0AA3E',
+        audienceColor: { background: 'rgba(42,171,145,0.12)', color: '#2AAB91' },
+        iconBg: 'linear-gradient(135deg, rgba(13,82,84,0.2) 0%, rgba(42,171,145,0.1) 100%)',
+        iconColor: '#2AAB91',
+        accentColor: '#2AAB91',
         bullets: [
             t('campus.tracks.aiAgent.bullet1'),
             t('campus.tracks.aiAgent.bullet2'),
@@ -353,7 +354,7 @@ function CampusPage() {
             {/* ── Section: What You'll Get ── */}
             <div style={{ marginBottom: '3rem' }}>
                 <h2 style={styles.sectionTitle}>
-                    <span style={{ color: 'var(--primary, #E0AA3E)' }}>
+                    <span style={{ color: '#2AAB91' }}>
                         <GraduationCap size={24} />
                     </span>
                     {t('campus.sectionTitle')}
@@ -400,6 +401,7 @@ function CampusPage() {
                                     color: 'var(--text-secondary)',
                                     marginBottom: '0.5rem',
                                     fontWeight: 500,
+                                    lineHeight: 1.4,
                                 }}>
                                     {track.subtitle}
                                 </div>
@@ -427,7 +429,7 @@ function CampusPage() {
             {/* ── Section: How to Communicate ── */}
             <div style={styles.contactSection}>
                 <h2 style={styles.sectionTitle}>
-                    <span style={{ color: 'var(--primary, #E0AA3E)' }}>
+                    <span style={{ color: '#2AAB91' }}>
                         <MessageCircle size={24} />
                     </span>
                     {t('campus.contactTitle')}
@@ -440,7 +442,7 @@ function CampusPage() {
                     {/* Direct Contact Card */}
                     <MMCard style={styles.contactCard}>
                         <div style={styles.cardTitle}>
-                            <Mail size={18} style={{ color: 'var(--primary, #E0AA3E)' }} />
+                            <Mail size={18} style={{ color: '#2AAB91' }} />
                             {t('campus.directContact')}
                         </div>
 
@@ -487,7 +489,7 @@ function CampusPage() {
                     {/* Social Media Card */}
                     <MMCard style={styles.contactCard}>
                         <div style={styles.cardTitle}>
-                            <Globe size={18} style={{ color: 'var(--primary, #E0AA3E)' }} />
+                            <Globe size={18} style={{ color: '#2AAB91' }} />
                             {t('campus.followUs')}
                         </div>
 

@@ -1,4 +1,4 @@
-/* MMCheckbox.css */
+/* MMCheckbox.css - MONTERA */
 .mm-checkbox-wrapper {
     display: inline-flex;
     align-items: center;
@@ -23,34 +23,34 @@
 .mm-checkbox-box {
     width: 20px;
     height: 20px;
-    border: 2px solid var(--border-color, #333);
+    border: 2px solid var(--border-color, #E0EBEB);
     border-radius: 4px;
-    background: var(--bg-input, #0F0F0F);
+    background: var(--bg-surface, #FFFFFF);
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.2s;
-    color: #000;
+    color: #FFFFFF;
 }
 
 .mm-checkbox-input:checked+.mm-checkbox-box {
-    background: var(--primary, #E0AA3E);
-    border-color: var(--primary, #E0AA3E);
+    background: #2AAB91;
+    border-color: #2AAB91;
 }
 
 .mm-checkbox-input:focus+.mm-checkbox-box {
-    box-shadow: 0 0 0 2px rgba(224, 170, 62, 0.2);
+    box-shadow: 0 0 0 2px rgba(42, 171, 145, 0.2);
 }
 
 .mm-checkbox-wrapper:hover:not(.disabled) .mm-checkbox-box {
-    border-color: var(--primary, #E0AA3E);
+    border-color: #2AAB91;
 }
 
 .mm-checkbox-label {
     font-size: 14px;
-    color: var(--text-primary, #fff);
+    color: var(--text-primary, #001A1D);
 }
 
 .mm-checkbox-wrapper.disabled .mm-checkbox-label {
-    color: var(--text-muted, #888);
+    color: var(--text-muted, #688A8C);
 }

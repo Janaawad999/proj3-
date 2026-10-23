@@ -270,13 +270,16 @@ const AIAgentChat = () => {
 
             // Call our backend API which proxies to MicroMind Core
             const token = localStorage.getItem('token');
+            const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+            const chatEndpoint = apiBase.endsWith('/api') ? `${apiBase}/v1/ai/chat/micromind` : `${apiBase}/api/v1/ai/chat/micromind`;
+
             const response = await fetch(
-                "http://localhost:3000/api/v1/ai/chat/micromind",
+                chatEndpoint,
                 {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
-                        "Authorization": `Bearer ${token}`
+                        ...(token ? { "Authorization": `Bearer ${token}` } : {})
                     },
                     body: JSON.stringify({
                         question: textToSend,
@@ -302,20 +305,22 @@ const AIAgentChat = () => {
                 throw new Error(errorMessage);
             }
 
-            const result = await response.json();
-            console.log('✅ Backend Response:', result);
-
             // Extract the AI response text
-            const aiResponseText = result.text || result.answer || result.response || '';
+            let aiResponseText = '';
+            if (typeof result === 'string') {
+                aiResponseText = result;
+            } else if (result && typeof result === 'object') {
+                aiResponseText = result.text || result.answer || result.response || result.result || (result.message && typeof result.message === 'string' ? result.message : '') || (result.data ? JSON.stringify(result.data, null, 2) : '');
+            }
 
             // Process artifacts - URLs are already backend proxy URLs
             let messageArtifacts = [];
             if (result.artifacts && Array.isArray(result.artifacts)) {
+                const serverOrigin = apiBase.replace(/\/api\/?$/, '');
                 messageArtifacts = result.artifacts.map(artifact => {
-                    // Convert relative URL to absolute backend URL if needed
                     let artifactUrl = artifact.url;
                     if (artifactUrl && !artifactUrl.startsWith('http')) {
-                        artifactUrl = `http://localhost:3000${artifactUrl}`;
+                        artifactUrl = `${serverOrigin}${artifactUrl}`;
                     }
                     return {
                         ...artifact,
@@ -499,8 +504,8 @@ const AIAgentChat = () => {
                         style={{
                             width: '100%',
                             padding: '0.75rem',
-                            backgroundColor: '#E0AA3E',
-                            color: '#000',
+                            background: 'linear-gradient(135deg, #0D5254 0%, #2AAB91 100%)',
+                            color: '#FFFFFF',
                             border: 'none',
                             borderRadius: '8px',
                             fontWeight: '600',
@@ -508,7 +513,8 @@ const AIAgentChat = () => {
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            gap: '0.5rem'
+                            gap: '0.5rem',
+                            boxShadow: '0 2px 6px rgba(42, 171, 145, 0.25)'
                         }}
                     >
                         <span>+</span> {t('aiChat.newChat')}
@@ -550,9 +556,9 @@ const AIAgentChat = () => {
                                             padding: '0.25rem 0.75rem',
                                             borderRadius: '9999px',
                                             border: '1px solid',
-                                            borderColor: activeMode === mode ? '#E0AA3E' : 'var(--border)',
-                                            backgroundColor: activeMode === mode ? '#E0AA3E' : 'var(--bg-hover)',
-                                            color: activeMode === mode ? '#000' : 'var(--text-muted)',
+                                            borderColor: activeMode === mode ? '#2AAB91' : 'var(--border)',
+                                            backgroundColor: activeMode === mode ? '#2AAB91' : 'var(--bg-hover)',
+                                            color: activeMode === mode ? '#FFFFFF' : 'var(--text-muted)',
                                             fontSize: '0.75rem',
                                             cursor: 'pointer'
                                         }}
@@ -637,7 +643,7 @@ const AIAgentChat = () => {
                                                 onClick={() => handleSelectSession(session.id)}
                                                 style={{
                                                     flex: 1,
-                                                    color: currentSessionId === session.id ? '#E0AA3E' : 'var(--text-muted)',
+                                                    color: currentSessionId === session.id ? '#2AAB91' : 'var(--text-muted)',
                                                     fontSize: '0.9rem',
                                                     whiteSpace: 'nowrap',
                                                     overflow: 'hidden',
@@ -740,7 +746,7 @@ const AIAgentChat = () => {
                 {!currentSessionId ? (
                     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
                         <div style={{ marginBottom: '1.5rem' }}>
-                            <img src="/assets/logo.png" alt="MicroMind Logo" style={{ width: '64px', height: '64px', objectFit: 'contain' }} />
+                            <img src="/assets/logo.png" alt="MONTERA Logo" style={{ width: '64px', height: '64px', objectFit: 'contain' }} />
                         </div>
                         <h2 style={{ color: 'var(--text-primary)', marginBottom: '0.5rem' }}>{t('aiChat.welcome.title')}</h2>
                         <p style={{ marginBottom: '2rem', textAlign: 'center' }}>
@@ -757,13 +763,13 @@ const AIAgentChat = () => {
                                         backgroundColor: 'var(--bg-hover)',
                                         border: '1px solid var(--border)',
                                         borderRadius: '9999px',
-                                        color: '#E0AA3E',
+                                        color: '#0D5254',
                                         fontWeight: '500',
                                         cursor: 'pointer',
                                         boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
                                         transition: 'all 0.2s'
                                     }}
-                                    onMouseEnter={(e) => { e.target.style.borderColor = '#E0AA3E'; e.target.style.transform = 'translateY(-2px)'; }}
+                                    onMouseEnter={(e) => { e.target.style.borderColor = '#2AAB91'; e.target.style.transform = 'translateY(-2px)'; }}
                                     onMouseLeave={(e) => { e.target.style.borderColor = 'var(--border)'; e.target.style.transform = 'translateY(0)'; }}
                                 >
                                     {prompt}
@@ -776,12 +782,13 @@ const AIAgentChat = () => {
                                 onClick={() => handleNewChat()}
                                 style={{
                                     padding: '0.75rem 2rem',
-                                    backgroundColor: '#E0AA3E',
-                                    color: '#000',
+                                    background: 'linear-gradient(135deg, #0D5254 0%, #2AAB91 100%)',
+                                    color: '#FFFFFF',
                                     border: 'none',
                                     borderRadius: '8px',
                                     fontWeight: '600',
-                                    cursor: 'pointer'
+                                    cursor: 'pointer',
+                                    boxShadow: '0 2px 8px rgba(42, 171, 145, 0.25)'
                                 }}
                             >
                                 {t('aiChat.welcome.startBlank')}
@@ -929,12 +936,12 @@ const AIAgentChat = () => {
                                                                         padding: '0.2rem 0.4rem',
                                                                         borderRadius: '4px',
                                                                         fontSize: '0.9em',
-                                                                        color: '#E0AA3E'
+                                                                        color: '#2AAB91'
                                                                     }} {...props} /> :
                                                                     <code style={{
                                                                         display: 'block',
-                                                                        backgroundColor: '#1e293b',
-                                                                        color: '#e2e8f0',
+                                                                        backgroundColor: '#001A1D',
+                                                                        color: '#F8FAFA',
                                                                         padding: '1rem',
                                                                         borderRadius: '8px',
                                                                         overflowX: 'auto',
@@ -946,7 +953,7 @@ const AIAgentChat = () => {
                                                                 <p style={{ margin: '0.5rem 0' }} {...props} />
                                                             ),
                                                             strong: ({ ...props }) => (
-                                                                <strong style={{ fontWeight: '600', color: '#E0AA3E' }} {...props} />
+                                                                <strong style={{ fontWeight: '600', color: '#0D5254' }} {...props} />
                                                             )
                                                         }}
                                                     >
@@ -969,7 +976,7 @@ const AIAgentChat = () => {
                                     <div style={{ width: '32px', height: '32px', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                         <img
                                             src="/assets/logo.png"
-                                            alt="MicroMind Logo"
+                                            alt="MONTERA Logo"
                                             style={{
                                                 width: '100%',
                                                 height: '100%',
@@ -997,8 +1004,8 @@ const AIAgentChat = () => {
                                         style={{
                                             padding: '0.5rem 1rem',
                                             borderRadius: '9999px',
-                                            border: '1px solid #FFC107',
-                                            backgroundColor: 'transparent',
+                                            border: '1px solid var(--border)',
+                                            backgroundColor: 'var(--bg-hover)',
                                             color: 'var(--text-primary)',
                                             fontSize: '0.85rem',
                                             cursor: 'pointer',
@@ -1006,8 +1013,8 @@ const AIAgentChat = () => {
                                             transition: 'all 0.2s',
                                             fontWeight: '500'
                                         }}
-                                        onMouseEnter={(e) => { e.target.style.backgroundColor = 'rgba(255, 193, 7, 0.1)'; }}
-                                        onMouseLeave={(e) => { e.target.style.backgroundColor = 'transparent'; }}
+                                        onMouseEnter={(e) => { e.target.style.borderColor = '#2AAB91'; }}
+                                        onMouseLeave={(e) => { e.target.style.borderColor = 'var(--border)'; }}
                                     >
                                         {prompt}
                                     </button>
@@ -1038,11 +1045,12 @@ const AIAgentChat = () => {
                                         padding: '0 1.5rem',
                                         borderRadius: '12px',
                                         border: 'none',
-                                        backgroundColor: '#FFC107',
-                                        color: '#000000',
+                                        background: 'linear-gradient(135deg, #0D5254 0%, #2AAB91 100%)',
+                                        color: '#FFFFFF',
                                         fontWeight: 'bold',
                                         cursor: inputValue.trim() ? 'pointer' : 'not-allowed',
-                                        opacity: inputValue.trim() ? 1 : 0.5
+                                        opacity: inputValue.trim() ? 1 : 0.5,
+                                        boxShadow: inputValue.trim() ? '0 2px 8px rgba(42, 171, 145, 0.25)' : 'none'
                                     }}
                                 >
                                     {t('aiChat.input.send')}

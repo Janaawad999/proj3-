@@ -2,362 +2,302 @@
 @tailwind components;
 @tailwind utilities;
 
-/* MicroMind V4 Executive Gold Skin - Dark Mode (Default) */
-:root,
-[data-theme="dark"] {
-  /* Core Colors - Dark Mode */
-  --bg-page: #0F0F0F;
-  /* Deep Night */
-  --bg-surface: #1C1C1C;
-  /* Carbon */
-  --bg-card: #1C1C1C;
-  /* Card background */
-  --bg-input: #0F0F0F;
-  /* Input backgrounds */
-  --bg-hover: #262626;
-  /* Hover state */
+/* =========================================================
+   AGRIPULSE DESIGN SYSTEM — LIVING INTELLIGENCE
+   NATURE + ENGINEERING + INTELLIGENCE
+   ========================================================= */
 
-  --primary: #E0AA3E;
-  /* Executive Gold */
-  --text-main: #F2F3EC;
-  /* Bone White */
-  --text-muted: #888888;
-  /* Tech Grey */
-  --border: #333333;
-  /* Subtle Grey */
+:root {
+  /* AgriPulse Core Palette */
+  --bg-page: #F6F5EF;          /* Warm Ivory application canvas */
+  --bg-surface: #FFFFFF;       /* Crisp white surface for cards */
+  --bg-subtle: #EFEFE7;        /* Soft ivory for secondary regions */
+  --bg-sidebar: #F0EFEA;       /* Neutral warm ivory sidebar */
+  --bg-sidebar-hover: #E8E7E0;
+  --bg-evergreen: #102D27;     /* Deep Evergreen high-contrast workspace */
+  --bg-evergreen-card: #153831;
+  --bg-evergreen-hover: #1A463D;
+  --bg-forest: #173F35;        /* Forest Green brand anchor */
 
-  /* Legacy Map (Mappings to keep existing code working while we refactor) */
-  --primary-color: var(--primary);
-  --secondary-color: var(--bg-surface);
-  --bg-color: var(--bg-page);
-  --card-bg: var(--bg-surface);
-  --text-primary: var(--text-main);
-  --text-secondary: var(--text-muted);
-  --border-color: var(--border);
+  --primary: #173F35;
+  --primary-hover: #113129;
+  --primary-light: rgba(23, 63, 53, 0.08);
 
-  --accent-color: #2CA58D;
-  --danger-color: #EF4444;
-  --warning-color: #F59E0B;
-  --success-color: #10B981;
+  --accent-lime: #C7F36B;      /* Fresh Lime accent & active highlights */
+  --accent-lime-hover: #B5E655;
+  --accent-sage: #DCE7D8;      /* Sage soft background */
+  --accent-sage-subtle: #EDF3EB;
+
+  --text-primary: #252B28;     /* Graphite text */
+  --text-secondary: #858A80;   /* Muted Stone text */
+  --text-muted: #9EABA5;
+  --text-inverse: #F6F5EF;
+  --text-forest: #173F35;
+  --text-lime: #C7F36B;
+
+  --border: #D8D7CD;           /* Razor-thin restrained borders */
+  --border-subtle: #E6E5DC;
+  --border-forest: #173F35;
+  --border-evergreen: #1C4B40;
+
+  /* Industrial Status Indicators */
+  --status-healthy: #173F35;
+  --status-warning: #E7A944;   /* Amber */
+  --status-critical: #D94C45;  /* Signal Red */
+  --status-offline: #858A80;
 
   /* Typography */
-  --font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
-  --heading-font: 'Outfit', sans-serif;
+  --font-family: 'Manrope', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 
-  /* Spacing */
-  --spacing-xs: 0.25rem;
-  --spacing-sm: 0.5rem;
-  --spacing-md: 1rem;
-  --spacing-lg: 1.5rem;
-  --spacing-xl: 2rem;
-
-  --shadow-sm: none;
-  --shadow-md: none;
-  --shadow-lg: none;
+  /* Shadows */
+  --shadow-subtle: 0 1px 3px rgba(23, 63, 53, 0.04), 0 1px 2px rgba(23, 63, 53, 0.02);
+  --shadow-card: 0 4px 14px rgba(23, 63, 53, 0.05);
+  --shadow-evergreen: 0 12px 30px rgba(16, 45, 39, 0.25);
 }
 
-/* Light Mode Theme */
-[data-theme="light"] {
-  /* Core Colors - Light Mode */
-  --bg-page: #FFFFFF;
-  /* Pure White */
-  --bg-surface: #FFFFFF;
-  /* White */
-  --bg-card: #FFFFFF;
-  /* Card background */
-  --bg-input: #F9FAFB;
-  /* Light Grey Input */
-  --bg-hover: #F3F4F6;
-  /* Light Hover */
-
-  --primary: #E0AA3E;
-  /* Darker Gold for better contrast */
-  --text-main: #000000;
-  /* Pure Black */
-  --text-muted: #6B7280;
-  /* Grey 500 */
-  --border: #E5E5E5;
-  /* Light Grey Border */
-
-  /* Legacy Map - Light Mode */
-  --primary-color: var(--primary);
-  --secondary-color: var(--bg-surface);
-  --bg-color: var(--bg-page);
-  --card-bg: var(--bg-surface);
-  --text-primary: var(--text-main);
-  --text-secondary: var(--text-muted);
-  --border-color: var(--border);
-
-  --accent-color: #0D9488;
-  /* Teal 600 */
-  --danger-color: #DC2626;
-  /* Red 600 */
-  --warning-color: #D97706;
-  /* Amber 600 */
-  --success-color: #16A34A;
-  /* Green 600 */
-
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-}
-
-body {
+/* Global resets & typography */
+html, body {
   margin: 0;
+  padding: 0;
+  background-color: var(--bg-page);
+  color: var(--text-primary);
   font-family: var(--font-family);
-  background-color: var(--bg-color);
-  color: var(--text-primary);
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-.dashboard-container {
-  min-height: 100vh;
-  background-color: var(--bg-color);
-  color: var(--text-primary);
+/* Tabular numbers for industrial telemetry readability */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+  font-family: var(--font-mono);
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-.label {
-  font-family: var(--heading-font);
-  color: var(--text-primary);
-  margin-bottom: var(--spacing-md);
+/* AgriPulse Card Surfaces */
+.agri-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  box-shadow: var(--shadow-subtle);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.subtext {
-  color: var(--text-muted);
+.agri-card:hover {
+  border-color: var(--border);
+  box-shadow: var(--shadow-card);
 }
 
-/* Utility Classes */
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: var(--spacing-md);
+/* Deep Evergreen Surfaces */
+.agri-evergreen-panel {
+  background-color: var(--bg-evergreen);
+  color: var(--text-inverse);
+  border: 1px solid var(--border-evergreen);
+  border-radius: 8px;
+  box-shadow: var(--shadow-evergreen);
 }
 
-.card,
-.white-box {
-  background: var(--bg-surface);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  box-shadow: none;
-  padding: var(--spacing-lg);
-  margin-bottom: var(--spacing-md);
-  color: var(--text-main);
-}
-
-.btn {
+/* AgriPulse Buttons */
+.agri-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.75rem 1.5rem;
-  border-radius: 4px;
-  /* Matches card radius */
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
   font-weight: 600;
+  letter-spacing: -0.01em;
+  transition: all 0.15s ease;
   cursor: pointer;
-  transition: all 0.2s;
-  border: none;
-  text-decoration: none;
+  border: 1px solid transparent;
 }
 
-.btn-primary,
-.btn-primary-blue {
+.agri-btn-primary {
   background-color: var(--primary);
-  color: #000000;
-  font-weight: bold;
-  border-radius: 4px;
+  color: #FFFFFF;
 }
 
-.btn-primary:hover,
-.btn-primary-blue:hover {
-  background-color: #e0a800;
-  transform: translateY(-1px);
+.agri-btn-primary:hover {
+  background-color: var(--primary-hover);
+  transform: translateY(-0.5px);
 }
 
-.btn-secondary {
-  background-color: var(--bg-hover);
-  border: 1px solid var(--border);
+.agri-btn-lime {
+  background-color: var(--accent-lime);
+  color: #173F35;
+  font-weight: 700;
+}
+
+.agri-btn-lime:hover {
+  background-color: var(--accent-lime-hover);
+  transform: translateY(-0.5px);
+}
+
+.agri-btn-outline {
+  background-color: transparent;
+  border-color: var(--border);
   color: var(--text-primary);
 }
 
-.btn-secondary:hover {
-  background-color: var(--border);
+.agri-btn-outline:hover {
+  background-color: var(--bg-subtle);
+  border-color: var(--primary);
 }
 
-.btn-danger {
-  background-color: var(--danger-color);
-  color: white;
-}
-
-.btn-danger-outline {
-  background-color: transparent;
-  border: 1px solid var(--danger-color);
-  color: var(--danger-color);
-}
-
-.btn-danger-outline:hover {
-  background-color: rgba(217, 83, 79, 0.1);
-}
-
-/* Tables */
-.table-header {
-  background-color: var(--bg-hover) !important;
-  color: #FFC107 !important;
-  border-bottom: 1px solid #FFC107 !important;
-}
-
-.table-header th,
-.table-header-cell {
-  color: #FFC107 !important;
-  font-weight: 700 !important;
-  text-transform: uppercase !important;
-  font-size: 0.75rem !important;
-  letter-spacing: 1px !important;
-  border-bottom: 1px solid #FFC107 !important;
-}
-
-.table-row {
-  background-color: var(--bg-surface) !important;
-  color: var(--text-primary) !important;
-  border-bottom: 1px solid var(--border) !important;
-}
-
-.table-row td {
-  color: var(--text-primary) !important;
-}
-
-.flex-between {
-  display: flex;
-  justify-content: space-between;
+/* Status Badges */
+.agri-badge {
+  display: inline-flex;
   align-items: center;
+  gap: 0.375rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
 }
 
-.grid-cols-2 {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--spacing-md);
+.agri-badge-healthy {
+  background-color: var(--accent-sage);
+  color: var(--status-healthy);
 }
 
-/* Mobile Optimization */
-@media (max-width: 768px) {
-  .grid-cols-2 {
-    grid-template-columns: 1fr;
+.agri-badge-warning {
+  background-color: #FDF4E6;
+  color: #925805;
+  border: 1px solid #F5D8A3;
+}
+
+.agri-badge-critical {
+  background-color: #FDECEC;
+  color: #9E1F1A;
+  border: 1px solid #F8B4B1;
+}
+
+.agri-badge-simulation {
+  background-color: #ECEBE4;
+  color: #555A52;
+  border: 1px solid #D5D4CA;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+}
+
+/* Engineering Water Flow Keyframes */
+@keyframes flow-pulse {
+  0% {
+    stroke-dashoffset: 40;
   }
-
-  .container {
-    padding: var(--spacing-sm);
+  100% {
+    stroke-dashoffset: 0;
   }
 }
 
-/* EXECUTION GOLD SKINS EXTENSION */
-
-/* Gold Leaflet Marker - V4 Polished */
-.gold-marker-icon {
-  filter: sepia(100%) saturate(2000%) brightness(1) hue-rotate(5deg);
+.animate-water-flow {
+  stroke-dasharray: 6 4;
+  animation: flow-pulse 1.2s linear infinite;
 }
 
-/* Leaflet Attribution - V4 Executive Gold Theme */
-.leaflet-control-attribution {
-  background-color: var(--bg-surface) !important;
-  color: var(--text-muted) !important;
-  border: 1px solid var(--border) !important;
-  border-radius: 4px !important;
-  padding: 3px 8px !important;
+/* Subtle Anomaly Pulse */
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
 }
 
-.leaflet-control-attribution a {
-  color: var(--primary) !important;
-  /* Executive Gold for links */
-  text-decoration: none !important;
-  font-weight: 600 !important;
+.animate-pulse-subtle {
+  animation: pulse-subtle 2s ease-in-out infinite;
 }
 
-.leaflet-control-attribution a:hover {
-  color: #E0AA3E !important;
-  /* Darker gold on hover */
-  text-decoration: underline !important;
+/* Living Intelligence Organic Pulse Rings */
+@keyframes ring-expand {
+  0% { transform: scale(0.94); opacity: 0.8; }
+  50% { transform: scale(1.05); opacity: 0.3; }
+  100% { transform: scale(0.94); opacity: 0.8; }
 }
 
-/* Ghost Pill Utils */
-/* Ghost Pill Utils - V4 Premium Update */
-.pill-ghost {
-  background-color: transparent !important;
-  border-width: 1px !important;
-  border-style: solid !important;
-  font-weight: 500;
+.animate-ring-pulse {
+  animation: ring-expand 3.5s ease-in-out infinite;
+  transform-origin: center;
 }
 
-.pill-ghost-success {
-  border-color: #10B981 !important;
-  color: #10B981 !important;
+@keyframes float-gentle {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-3px); }
 }
 
-.pill-ghost-warning {
-  border-color: #64748B !important;
-  color: #64748B !important;
+.animate-float-gentle {
+  animation: float-gentle 4s ease-in-out infinite;
 }
 
-.pill-ghost-danger {
-  border-color: #EF4444 !important;
-  color: #EF4444 !important;
+/* Mobile-First Utilities */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
-/* AI Chat User Bubble */
-.ai-user-bubble-gold {
-  background-color: transparent !important;
-  border: 1px solid #FFC107 !important;
-  color: var(--text-primary) !important;
+.agri-glass {
+  background: rgba(246, 245, 239, 0.92);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
 
-/* Dropdown Selection Fix (Polish Step 309) */
-option:checked {
-  background-color: #FFC107 !important;
-  color: #000000 !important;
+.agri-glass-white {
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
 
-/* React-Select / Generic Dropdown Active States */
-.dropdown-item.active,
-.dropdown-item:hover,
-.select__option--is-selected {
-  background-color: #FFC107 !important;
-  color: #000000 !important;
+.agri-glass-evergreen {
+  background: rgba(16, 45, 39, 0.94);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
-.select__option--is-focused {
-  background-color: var(--bg-hover) !important;
-  color: var(--text-primary) !important;
+/* Safe area support for iOS / Android mobile devices */
+.pb-safe {
+  padding-bottom: max(1.25rem, env(safe-area-inset-bottom, 1.25rem));
 }
 
-/* The Slide-Over Panel */
-.customer-drawer {
-  position: fixed;
-  top: 0;
-  right: 0;
-  height: 100vh;
-  width: 600px;
-  background-color: var(--bg-surface);
-  border-left: 1px solid #FFC107;
-  box-shadow: -10px 0 25px rgba(0, 0, 0, 0.7);
-  z-index: 50;
-  transform: translateX(100%);
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+.pt-safe {
+  padding-top: max(0.75rem, env(safe-area-inset-top, 0.75rem));
 }
 
-.customer-drawer.open {
-  transform: translateX(0);
+.mb-safe {
+  margin-bottom: max(1rem, env(safe-area-inset-bottom, 1rem));
 }
 
-/* The Backdrop */
-.drawer-backdrop {
-  position: fixed;
-  inset: 0;
-  background-color: rgba(0, 0, 0, 0.6);
-  -webkit-backdrop-filter: blur(2px);
-  backdrop-filter: blur(2px);
-  /* Premium touch */
-  z-index: 40;
+/* Mobile Touch Interactive Cards */
+.agri-mobile-card {
+  background-color: #FFFFFF;
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(23, 63, 53, 0.04);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.agri-mobile-card:hover {
+  border-color: var(--border);
+  box-shadow: 0 4px 16px rgba(23, 63, 53, 0.08);
+}
+
+.agri-mobile-card:active {
+  transform: scale(0.99);
+}
+
+/* Scrollbar refinement */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background-color: rgba(23, 63, 53, 0.2);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(23, 63, 53, 0.4);
 }

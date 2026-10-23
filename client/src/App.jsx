@@ -3,88 +3,39 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute';
 import ManagerLayout from './components/ManagerLayout';
 import LoginScreen from './pages/LoginScreen';
+import AgriPulseBrandMark from './components/AgriPulseBrandMark';
 
-// Lazy load pages for better performance
+// Lazy load AgriPulse core pages
 const HomePage = lazy(() => import('./pages/HomePage'));
-const CoPilotsPage = lazy(() => import('./pages/CoPilotsPage'));
-const DocumentsLibrary = lazy(() => import('./pages/DocumentsLibrary'));
-const DashboardsPage = lazy(() => import('./pages/DashboardsPage'));
-const ReportBotPage = lazy(() => import('./pages/ReportBotPage'));
-const ReportsPage = lazy(() => import('./pages/ReportsPage'));
+const LiveOperationsPage = lazy(() => import('./pages/LiveOperationsPage'));
+const PredictiveIntelligencePage = lazy(() => import('./pages/PredictiveIntelligencePage'));
+const AIDiagnosticsPage = lazy(() => import('./pages/AIDiagnosticsPage'));
+const FieldVisionPage = lazy(() => import('./pages/FieldVisionPage'));
+const PumpAssetsPage = lazy(() => import('./pages/PumpAssetsPage'));
+const MaintenancePage = lazy(() => import('./pages/MaintenancePage'));
+const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage'));
 const SettingsPage = lazy(() => import('./pages/SettingsPage'));
-const CampusPage = lazy(() => import('./pages/CampusPage'));
+
+// Retained documentation & library pages
+const DocumentsLibrary = lazy(() => import('./pages/DocumentsLibrary'));
 const DocsPage = lazy(() => import('./pages/DocsPage'));
 const DocsViewer = lazy(() => import('./pages/DocsViewer'));
 
-// Branded loading fallback with MicroMind logo + golden spinner
+// AgriPulse Living Intelligence loading fallback
 const LoadingFallback = () => (
-    <div style={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: 'var(--bg-page, #0F0F0F)',
-        color: 'var(--text-primary, #F2F3EC)',
-    }}>
-        <div style={{ textAlign: 'center' }}>
-            {/* Spinner ring + pulsing logo */}
-            <div style={{
-                position: 'relative',
-                width: '80px',
-                height: '80px',
-                margin: '0 auto 24px',
-            }}>
-                {/* Spinning ring */}
-                <div style={{
-                    position: 'absolute',
-                    inset: 0,
-                    borderRadius: '50%',
-                    border: '3px solid rgba(224,170,62,0.15)',
-                    borderTopColor: '#E0AA3E',
-                    animation: 'mm-spin 1s linear infinite',
-                }} />
-                {/* Logo in center */}
-                <img
-                    src="/assets/logo.png"
-                    alt="MicroMind"
-                    style={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        width: '40px',
-                        height: '40px',
-                        objectFit: 'contain',
-                        animation: 'mm-pulse 2s ease-in-out infinite',
-                    }}
-                />
+    <div className="min-h-screen flex items-center justify-center bg-[#F6F5EF] text-[#173F35]">
+        <div className="text-center flex flex-col items-center">
+            {/* Pulsing AgriPulse Brand Mark */}
+            <div className="relative mb-4 animate-pulse">
+                <AgriPulseBrandMark size={56} showText={false} />
             </div>
-            {/* Brand text */}
-            <div style={{
-                fontSize: '1.1rem',
-                fontWeight: 700,
-                letterSpacing: '0.15em',
-                textTransform: 'uppercase',
-                color: '#E0AA3E',
-                marginBottom: '6px',
-            }}>MicroMind</div>
-            <div style={{
-                fontSize: '0.7rem',
-                letterSpacing: '0.2em',
-                textTransform: 'uppercase',
-                color: '#555',
-            }}>Business Suite</div>
+            <div className="text-sm font-extrabold tracking-tight text-[#173F35]">
+                Agri<span className="text-[#173F35]">Pulse</span>
+            </div>
+            <div className="text-[0.68rem] tracking-widest uppercase font-mono text-[#858A80] mt-1">
+                Synchronizing Digital Twin Telemetry...
+            </div>
         </div>
-        {/* Keyframe animations injected via style tag */}
-        <style>{`
-            @keyframes mm-spin {
-                to { transform: rotate(360deg); }
-            }
-            @keyframes mm-pulse {
-                0%, 100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-                50% { opacity: 0.6; transform: translate(-50%, -50%) scale(0.92); }
-            }
-        `}</style>
     </div>
 );
 
@@ -92,26 +43,55 @@ function App() {
     return (
         <Suspense fallback={<LoadingFallback />}>
             <Routes>
-                {/* Public Routes */}
+                {/* Public Route */}
                 <Route path="/login" element={<LoginScreen />} />
 
-                {/* Protected Routes */}
+                {/* Protected Application Workspace */}
                 <Route element={<ProtectedRoute />}>
                     <Route element={<ManagerLayout />}>
+                        {/* 1. Signature Screen: Overview */}
                         <Route path="/" element={<HomePage />} />
-                        <Route path="/copilots" element={<CoPilotsPage />} />
-                        <Route path="/documents" element={<DocumentsLibrary />} />
-                        <Route path="/analytics/dashboards" element={<DashboardsPage />} />
-                        <Route path="/report-bot" element={<ReportBotPage />} />
-                        <Route path="/reports" element={<ReportsPage />} />
+                        <Route path="/overview" element={<HomePage />} />
+
+                        {/* 2. Live Operations (with /transactions legacy alias) */}
+                        <Route path="/operations" element={<LiveOperationsPage />} />
+                        <Route path="/transactions" element={<LiveOperationsPage />} />
+
+                        {/* 3. Predictive Intelligence */}
+                        <Route path="/predictive" element={<PredictiveIntelligencePage />} />
+                        <Route path="/predictive-intelligence" element={<PredictiveIntelligencePage />} />
+
+                        {/* 4. AI Diagnostics (with /copilots legacy alias) */}
+                        <Route path="/diagnostics" element={<AIDiagnosticsPage />} />
+                        <Route path="/copilots" element={<AIDiagnosticsPage />} />
+                        <Route path="/copilot" element={<AIDiagnosticsPage />} />
+
+                        {/* 5. Field Vision (YOLOv8 Crop Disease Detection) */}
+                        <Route path="/field-vision" element={<FieldVisionPage />} />
+
+                        {/* 6. Pump Assets */}
+                        <Route path="/assets" element={<PumpAssetsPage />} />
+                        <Route path="/pumps" element={<PumpAssetsPage />} />
+
+                        {/* 7. Maintenance & Work Orders (with /budgets-goals legacy alias) */}
+                        <Route path="/maintenance" element={<MaintenancePage />} />
+                        <Route path="/budgets-goals" element={<MaintenancePage />} />
+
+                        {/* 8. Analytics */}
+                        <Route path="/analytics" element={<AnalyticsPage />} />
+                        <Route path="/analytics/dashboards" element={<AnalyticsPage />} />
+
+                        {/* 9. Settings */}
                         <Route path="/settings" element={<SettingsPage />} />
-                        <Route path="/campus" element={<CampusPage />} />
+
+                        {/* Retained Technical Documentation & Manuals */}
+                        <Route path="/documents" element={<DocumentsLibrary />} />
                         <Route path="/docs" element={<DocsPage />} />
                         <Route path="/docs/:slug" element={<DocsViewer />} />
                     </Route>
                 </Route>
 
-                {/* Fallback redirect */}
+                {/* Fallback Redirect */}
                 <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
         </Suspense>

@@ -1,307 +1,209 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import authService from '../services/authService';
-import { User, Lock, ArrowRight } from 'lucide-react';
+import AgriPulseBrandMark from '../components/AgriPulseBrandMark';
+import OnboardingModal from '../components/OnboardingModal';
+import { Lock, Mail, User, ArrowRight, ShieldCheck, Sparkles, Check, HelpCircle } from 'lucide-react';
+import { DATA_PROVENANCE } from '../services/agriPulseData';
 
 const LoginScreen = () => {
-    const [username, setUsername] = useState('');
+    const [isSignUp, setIsSignUp] = useState(false);
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
+
     const navigate = useNavigate();
 
-    const handleLogin = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
         setLoading(true);
 
         try {
-            await authService.login(username, password);
-            const user = authService.getCurrentUser();
-
-            if (user.role === 'MANAGER') {
-                navigate('/');
+            if (isSignUp) {
+                await authService.register(name, email, password);
             } else {
-                navigate('/collector/tasks');
+                await authService.login(email, password);
             }
-        } catch {
-            setError('Invalid credentials. Please try again.');
+            navigate('/');
+        } catch (err) {
+            console.warn('Real auth server returned error or offline:', err);
+            const serverMsg = err?.response?.data?.message;
+            setError(serverMsg || 'Authentication server offline. Use the "Demo Engineer Access" button below to explore.');
         } finally {
             setLoading(false);
         }
     };
 
-    return (
-        <div style={{
-            minHeight: '100vh',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: 'var(--bg-page)',
-            padding: '2rem'
-        }}>
-            {/* Login Card */}
-            <div style={{
-                width: '100%',
-                maxWidth: '440px',
-                backgroundColor: 'var(--bg-surface)',
-                borderRadius: '12px',
-                border: '1px solid var(--border)',
-                overflow: 'hidden',
-                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
-            }}>
-                {/* Header */}
-                <div style={{
-                    padding: '2.5rem 2rem 2rem 2rem',
-                    textAlign: 'center',
-                    borderBottom: '1px solid var(--border)'
-                }}>
-                    {/* Logo */}
-                    <div style={{
-                        width: '64px',
-                        height: '64px',
-                        margin: '0 auto 1.5rem auto',
-                        background: 'linear-gradient(135deg, #E0AA3E 0%, #F5C451 100%)',
-                        borderRadius: '12px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: '28px',
-                        fontWeight: '700',
-                        color: '#000000',
-                        letterSpacing: '1px'
-                    }}>
-                        YCC
-                    </div>
+    const handleDemoLogin = () => {
+        const demoUser = {
+            id: 'demo-engineer-01',
+            displayName: 'Tariq Mansour',
+            email: 't.mansour@agripulse.ai',
+            role: 'Lead Irrigation Engineer',
+            organizationId: 'agripulse-delta-7'
+        };
+        localStorage.setItem('user', JSON.stringify(demoUser));
+        localStorage.setItem('token', 'demo-jwt-token-agripulse-living-intelligence');
+        navigate('/');
+    };
 
-                    {/* Title */}
-                    <h1 style={{
-                        margin: '0 0 0.5rem 0',
-                        fontSize: '1.75rem',
-                        fontWeight: '700',
-                        color: 'var(--text-primary)'
-                    }}>
-                        Yasra
-                    </h1>
-                    <p style={{
-                        margin: 0,
-                        fontSize: '13px',
-                        fontWeight: '600',
-                        color: '#E0AA3E',
-                        textTransform: 'uppercase',
-                        letterSpacing: '1px'
-                    }}>
-                        Credit Control
+    return (
+        <div className="min-h-screen bg-[#F6F5EF] flex items-center justify-center p-4 selection:bg-[#C7F36B] selection:text-[#173F35]">
+            <div className="w-full max-w-md bg-white border border-[#D8D7CD] rounded-3xl shadow-xl overflow-hidden flex flex-col">
+                {/* Brand Masthead with Organic Glow */}
+                <div className="bg-[#102D27] p-8 text-center text-white border-b border-[#1C4B40] relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-36 h-36 bg-[#C7F36B]/10 rounded-full blur-2xl pointer-events-none" />
+                    
+                    <div className="flex justify-center mb-3">
+                        <AgriPulseBrandMark size={48} showText={false} />
+                    </div>
+                    <h2 className="text-2xl font-extrabold tracking-tight text-white">
+                        Agri<span className="text-[#C7F36B]">Pulse</span>
+                    </h2>
+                    <p className="text-xs text-[#A0ABA4] mt-1 font-mono tracking-wider uppercase">
+                        Living Intelligence for Smart Irrigation
                     </p>
                 </div>
 
-                {/* Form Section */}
-                <div style={{
-                    padding: '2rem'
-                }}>
-                    <h2 style={{
-                        margin: '0 0 1.5rem 0',
-                        fontSize: '1.25rem',
-                        fontWeight: '600',
-                        color: 'var(--text-primary)'
-                    }}>
-                        Welcome Back
-                    </h2>
+                {/* Form & Actions Body */}
+                <div className="p-6 sm:p-8 space-y-5">
+                    {/* Mode Switcher Tabs */}
+                    <div className="flex rounded-xl bg-[#FAF9F5] p-1 border border-[#E6E5DC]">
+                        <button
+                            type="button"
+                            onClick={() => setIsSignUp(false)}
+                            className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${
+                                !isSignUp ? 'bg-[#173F35] text-white shadow-xs' : 'text-[#858A80] hover:text-[#252B28]'
+                            }`}
+                        >
+                            Sign In
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setIsSignUp(true)}
+                            className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${
+                                isSignUp ? 'bg-[#173F35] text-white shadow-xs' : 'text-[#858A80] hover:text-[#252B28]'
+                            }`}
+                        >
+                            Create Account
+                        </button>
+                    </div>
 
-                    <form onSubmit={handleLogin}>
-                        {/* Username Field */}
-                        <div style={{ marginBottom: '1.25rem' }}>
-                            <label style={{
-                                display: 'block',
-                                marginBottom: '0.5rem',
-                                fontSize: '0.875rem',
-                                fontWeight: '600',
-                                color: 'var(--text-muted)'
-                            }}>
-                                Username
-                            </label>
-                            <div style={{ position: 'relative' }}>
-                                <User
-                                    size={18}
-                                    color="var(--text-muted)"
-                                    style={{
-                                        position: 'absolute',
-                                        left: '14px',
-                                        top: '50%',
-                                        transform: 'translateY(-50%)',
-                                        pointerEvents: 'none'
-                                    }}
-                                />
+                    {error && (
+                        <div className="p-3 bg-[#FDECEC] border border-[#F8B4B1] rounded-xl text-xs text-[#9E1F1A]">
+                            {error}
+                        </div>
+                    )}
+
+                    <form onSubmit={handleSubmit} className="space-y-3.5 text-xs">
+                        {isSignUp && (
+                            <div>
+                                <label className="block font-bold text-[#252B28] mb-1">Full Name</label>
+                                <div className="relative">
+                                    <User size={15} className="absolute left-3 top-3 text-[#858A80]" />
+                                    <input
+                                        type="text"
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
+                                        placeholder="e.g., Tariq Mansour"
+                                        required
+                                        className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-[#D8D7CD] focus:outline-none focus:border-[#173F35] transition-colors"
+                                    />
+                                </div>
+                            </div>
+                        )}
+
+                        <div>
+                            <label className="block font-bold text-[#252B28] mb-1">Email Address</label>
+                            <div className="relative">
+                                <Mail size={15} className="absolute left-3 top-3 text-[#858A80]" />
                                 <input
-                                    type="text"
-                                    value={username}
-                                    onChange={(e) => setUsername(e.target.value)}
-                                    placeholder="Enter your username"
-                                    style={{
-                                        width: '100%',
-                                        padding: '12px 14px 12px 44px',
-                                        borderRadius: '8px',
-                                        border: '1px solid var(--border)',
-                                        backgroundColor: 'var(--bg-input)',
-                                        color: 'var(--text-primary)',
-                                        fontSize: '0.95rem',
-                                        outline: 'none',
-                                        boxSizing: 'border-box',
-                                        transition: 'border-color 150ms cubic-bezier(0.4, 0, 0.2, 1)'
-                                    }}
-                                    onFocus={(e) => e.target.style.borderColor = '#E0AA3E'}
-                                    onBlur={(e) => e.target.style.borderColor = 'var(--border)'}
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    placeholder="engineer@agripulse.ai"
                                     required
+                                    className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-[#D8D7CD] focus:outline-none focus:border-[#173F35] transition-colors"
                                 />
                             </div>
                         </div>
 
-                        {/* Password Field */}
-                        <div style={{ marginBottom: '1.25rem' }}>
-                            <label style={{
-                                display: 'block',
-                                marginBottom: '0.5rem',
-                                fontSize: '0.875rem',
-                                fontWeight: '600',
-                                color: 'var(--text-muted)'
-                            }}>
-                                Password
-                            </label>
-                            <div style={{ position: 'relative' }}>
-                                <Lock
-                                    size={18}
-                                    color="var(--text-muted)"
-                                    style={{
-                                        position: 'absolute',
-                                        left: '14px',
-                                        top: '50%',
-                                        transform: 'translateY(-50%)',
-                                        pointerEvents: 'none'
-                                    }}
-                                />
+                        <div>
+                            <label className="block font-bold text-[#252B28] mb-1">Password</label>
+                            <div className="relative">
+                                <Lock size={15} className="absolute left-3 top-3 text-[#858A80]" />
                                 <input
                                     type="password"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    placeholder="Enter your password"
-                                    style={{
-                                        width: '100%',
-                                        padding: '12px 14px 12px 44px',
-                                        borderRadius: '8px',
-                                        border: '1px solid var(--border)',
-                                        backgroundColor: 'var(--bg-input)',
-                                        color: 'var(--text-primary)',
-                                        fontSize: '0.95rem',
-                                        outline: 'none',
-                                        boxSizing: 'border-box',
-                                        transition: 'border-color 150ms cubic-bezier(0.4, 0, 0.2, 1)'
-                                    }}
-                                    onFocus={(e) => e.target.style.borderColor = '#E0AA3E'}
-                                    onBlur={(e) => e.target.style.borderColor = 'var(--border)'}
+                                    placeholder="••••••••••••"
                                     required
+                                    className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-[#D8D7CD] focus:outline-none focus:border-[#173F35] transition-colors"
                                 />
                             </div>
                         </div>
 
-                        {/* Forgot Password Link */}
-                        <div style={{
-                            display: 'flex',
-                            justifyContent: 'flex-end',
-                            marginBottom: '1.5rem'
-                        }}>
-                            <a
-                                href="#"
-                                style={{
-                                    color: '#E0AA3E',
-                                    fontSize: '0.85rem',
-                                    textDecoration: 'none',
-                                    fontWeight: '500',
-                                    transition: 'color 150ms'
-                                }}
-                                onMouseEnter={(e) => e.target.style.color = '#F5C451'}
-                                onMouseLeave={(e) => e.target.style.color = '#E0AA3E'}
-                            >
-                                Forgot username or password?
-                            </a>
-                        </div>
-
-                        {/* Error Message */}
-                        {error && (
-                            <div style={{
-                                backgroundColor: 'rgba(220, 38, 38, 0.1)',
-                                border: '1px solid rgba(220, 38, 38, 0.3)',
-                                color: '#fca5a5',
-                                padding: '12px 14px',
-                                borderRadius: '8px',
-                                marginBottom: '1.5rem',
-                                fontSize: '0.9rem',
-                                fontWeight: '500'
-                            }}>
-                                {error}
-                            </div>
-                        )}
-
-                        {/* Login Button */}
                         <button
                             type="submit"
                             disabled={loading}
-                            style={{
-                                width: '100%',
-                                padding: '14px 24px',
-                                borderRadius: '8px',
-                                border: 'none',
-                                backgroundColor: loading ? '#ccaa44' : '#E0AA3E',
-                                color: '#000000',
-                                fontSize: '1rem',
-                                fontWeight: '600',
-                                cursor: loading ? 'not-allowed' : 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                gap: '8px',
-                                transition: 'background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)',
-                                opacity: loading ? 0.7 : 1
-                            }}
-                            onMouseEnter={(e) => {
-                                if (!loading) e.target.style.backgroundColor = '#F5C451';
-                            }}
-                            onMouseLeave={(e) => {
-                                if (!loading) e.target.style.backgroundColor = '#E0AA3E';
-                            }}
+                            className="w-full py-3 rounded-xl bg-[#173F35] text-white font-extrabold text-xs hover:bg-[#113129] flex items-center justify-center gap-2 shadow-xs transition-all active:scale-[0.99] mt-2"
                         >
-                            {loading ? (
-                                <>
-                                    <div className="spinner" style={{
-                                        width: '16px',
-                                        height: '16px',
-                                        border: '2px solid rgba(0, 0, 0, 0.3)',
-                                        borderTopColor: '#000000',
-                                        borderRadius: '50%'
-                                    }}></div>
-                                    Logging in...
-                                </>
-                            ) : (
-                                <>
-                                    Log In
-                                    <ArrowRight size={20} />
-                                </>
-                            )}
+                            <span>{loading ? 'Authenticating...' : isSignUp ? 'Register Engineer Profile' : 'Sign In to Workspace'}</span>
+                            <ArrowRight size={14} />
                         </button>
                     </form>
-                </div>
 
-                {/* Footer */}
-                <div style={{
-                    padding: '1.5rem 2rem',
-                    textAlign: 'center',
-                    fontSize: '0.8rem',
-                    color: 'var(--text-muted)',
-                    borderTop: '1px solid var(--border)'
-                }}>
-                    <p style={{ margin: '0 0 0.25rem 0' }}>Version 1.0.0</p>
-                    <p style={{ margin: 0 }}>Contact IT Support for access issues.</p>
+                    {/* Divider */}
+                    <div className="relative my-4">
+                        <div className="absolute inset-0 flex items-center">
+                            <div className="w-full border-t border-[#E6E5DC]" />
+                        </div>
+                        <div className="relative flex justify-center text-[0.68rem] uppercase font-mono tracking-wider">
+                            <span className="bg-white px-3 text-[#858A80]">Instant Demonstration</span>
+                        </div>
+                    </div>
+
+                    {/* 1-Tap Demo Access Button */}
+                    <button
+                        type="button"
+                        onClick={handleDemoLogin}
+                        className="w-full py-3 px-4 rounded-xl bg-[#C7F36B] hover:bg-[#B5E655] text-[#173F35] font-extrabold text-xs flex items-center justify-center gap-2 transition-all shadow-xs active:scale-[0.99]"
+                    >
+                        <Sparkles size={15} />
+                        <span>Explore as Lead Engineer (Tariq Mansour)</span>
+                    </button>
+
+                    {/* Tour Trigger */}
+                    <div className="text-center pt-1">
+                        <button
+                            type="button"
+                            onClick={() => setIsOnboardingOpen(true)}
+                            className="text-xs text-[#858A80] hover:text-[#173F35] font-semibold flex items-center justify-center gap-1.5 mx-auto"
+                        >
+                            <HelpCircle size={14} />
+                            <span>Preview Living Intelligence Tour</span>
+                        </button>
+                    </div>
+
+                    {/* Security & Provenance Badge */}
+                    <div className="pt-2 text-center">
+                        <div className="inline-flex items-center gap-1.5 text-[0.68rem] text-[#858A80] font-mono">
+                            <ShieldCheck size={12} className="text-[#173F35]" />
+                            <span>Telemetry Mode: {DATA_PROVENANCE.dataSource}</span>
+                        </div>
+                    </div>
                 </div>
             </div>
+
+            {/* Onboarding Tour Modal */}
+            <OnboardingModal 
+                isOpen={isOnboardingOpen} 
+                onClose={() => setIsOnboardingOpen(false)} 
+            />
         </div>
     );
 };

@@ -15,20 +15,19 @@ import authService from '../services/authService';
  * 3. If authenticated and role allowed → render child routes
  */
 const ProtectedRoute = ({ allowedRoles = [] }) => {
+    const token = localStorage.getItem('token');
     const user = authService.getCurrentUser();
 
-    // Check authentication
-    if (!user) {
+    // Check authentication: both valid token and user profile must exist
+    if (!token || !user) {
+        if (!token && user) localStorage.removeItem('user');
+        if (token && !user) localStorage.removeItem('token');
         return <Navigate to="/login" replace />;
     }
 
     // Check role-based authorization
     if (allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
-        // Redirect to appropriate home based on user's actual role
-        const redirectPath = user.role === 'MANAGER' || user.role === 'ADMIN'
-            ? '/'
-            : '/collector/tasks';
-        return <Navigate to={redirectPath} replace />;
+        return <Navigate to="/" replace />;
     }
 
     // User is authenticated and authorized - render child routes

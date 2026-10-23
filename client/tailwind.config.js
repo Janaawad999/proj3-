@@ -3,58 +3,75 @@ module.exports = {
     content: [
         "./src/**/*.{js,jsx,ts,tsx}",
     ],
+    darkMode: 'class',
     theme: {
         extend: {
             colors: {
-                // Brand Colors - Executive Gold Palette
-                brand: {
-                    primary: '#FFC107',  // Executive Gold
-                    hover: '#FFB300',    // Hover state
-                    bone: '#F2F3EC',     // Brand bone/cream
+                // AgriPulse: Living Intelligence Brand System
+                agri: {
+                    ivory: '#F6F5EF',          // Warm Ivory primary page background
+                    ivorySoft: '#EFEFE7',      // Slightly deeper ivory for nested panels
+                    forest: '#173F35',         // Forest Green primary brand
+                    forestHover: '#13352D',    // Forest Green hover state
+                    evergreen: '#102D27',      // Deep Evergreen high-contrast surface
+                    lime: '#C7F36B',           // Fresh Lime active highlights & accents
+                    limeHover: '#B5E655',      // Lime hover
+                    sage: '#DCE7D8',           // Soft sage background & nominal state
+                    sageSoft: '#EBF1E8',       // Ultra soft sage
+                    graphite: '#252B28',       // High-contrast primary text
+                    stone: '#858A80',          // Muted secondary stone text
+                    amber: '#E7A944',          // Anomaly warnings
+                    red: '#D94C45',            // Critical alarms / Cavitation
                 },
-                // Backgrounds - Dark theme
+                // Background tokens
                 bg: {
-                    page: '#0F0F0F',     // Darkest background
-                    surface: '#1C1C1C',  // Card/drawer background
-                    input: '#262626',    // Input fields
-                    hover: '#333333',    // Hover states
+                    page: '#F6F5EF',
+                    surface: '#FFFFFF',
+                    subtle: '#EFEFE7',
+                    dark: '#102D27',
+                    darkCard: '#143831',
+                    darkHover: '#1C4B41',
                 },
-                // Typography
+                // Typography tokens
                 text: {
-                    main: '#F2F3EC',     // Primary text
-                    muted: '#888888',    // Secondary text
-                    onBrand: '#000000',  //Text on gold backgrounds
+                    primary: '#252B28',
+                    secondary: '#858A80',
+                    brand: '#173F35',
+                    inverse: '#F6F5EF',
+                    lime: '#C7F36B',
                 },
-                // Borders
+                // Precision borders
                 border: {
-                    subtle: '#333333',   // Default borders
-                    active: '#FFC107',   // Active/focused borders
+                    subtle: '#E6E5DC',
+                    DEFAULT: '#D8D7CD',
+                    forest: '#173F35',
+                    lime: '#C7F36B',
                 },
-                // Status colors
+                // Status tokens
                 status: {
-                    success: '#22C55E',
-                    warning: '#F0AD4E',
-                    danger: '#D9534F',
+                    optimal: '#173F35',
+                    healthy: '#2E7D32',
+                    caution: '#E7A944',
+                    critical: '#D94C45',
+                    offline: '#858A80',
                 },
             },
-            // Border Radius - V4 Softer/Friendlier
             borderRadius: {
                 'sm': '4px',
                 'DEFAULT': '6px',
                 'md': '8px',
-                'lg': '12px',
-                'xl': '16px',
+                'lg': '10px',
+                'xl': '12px',
             },
-            // Box Shadows
             boxShadow: {
-                'button': '0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-                'button-hover': '0 6px 8px -1px rgba(0, 0, 0, 0.4), 0 3px 5px -1px rgba(0, 0, 0, 0.08)',
-                'card': '0 4px 20px rgba(0, 0, 0, 0.3)',
+                'subtle': '0 1px 3px rgba(23, 63, 53, 0.04), 0 1px 2px rgba(23, 63, 53, 0.02)',
+                'panel': '0 4px 14px rgba(23, 63, 53, 0.06)',
+                'evergreen': '0 12px 30px rgba(16, 45, 39, 0.25)',
+                'lime-glow': '0 0 16px rgba(199, 243, 107, 0.25)',
             },
-            // Font Family
             fontFamily: {
-                sans: ['Inter', 'system-ui', 'Avenir', 'Helvetica', 'Arial', 'sans-serif'],
-                heading: ['Outfit', 'sans-serif'],
+                sans: ['Manrope', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
+                mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
             },
         },
     },

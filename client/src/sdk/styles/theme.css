@@ -1,78 +1,63 @@
 /**
- * MicroMind V4 Executive Gold Theme
- * Central CSS variables for SDK components
- * 
- * This file consolidates all theme variables used by SDK components.
- * Import this in your main app CSS or entry point.
+ * MONTERA Fintech Design System Theme
+ * Deep Teal (#0D5254), Teal (#1F8180), Mint Green (#2AAB91), Dark Teal (#003F46)
  */
 
 /* ========================================
-   DARK MODE (Default)
+   LIGHT MODE (Default)
    ======================================== */
 :root,
-[data-theme="dark"] {
+[data-theme="light"] {
     /* Background Colors */
-    --bg-page: #0F0F0F;
-    /* Deep Night */
-    --bg-surface: #1C1C1C;
-    /* Carbon */
-    --bg-card: #1C1C1C;
-    /* Card background */
-    --bg-input: #0F0F0F;
-    /* Input backgrounds */
-    --bg-hover: #262626;
-    /* Hover state */
+    --bg-page: #F8FAFA;
+    --bg-surface: #FFFFFF;
+    --bg-card: #FFFFFF;
+    --bg-input: #F0F5F5;
+    --bg-hover: #E8F2F2;
+    --bg-sidebar: #003F46;
+    --bg-sidebar-hover: #0D5254;
 
     /* Text Colors */
-    --text-primary: #F2F3EC;
-    /* Bone White - Primary text */
-    --text-secondary: #CCCCCC;
-    /* Light Grey - Secondary text */
-    --text-muted: #888888;
-    /* Tech Grey - Muted text */
-    --text-main: #F2F3EC;
-    /* Alias for primary */
+    --text-primary: #003F46;
+    --text-secondary: #4D6B6C;
+    --text-muted: #6E8D8E;
+    --text-main: #003F46;
+    --text-inverse: #FFFFFF;
 
     /* Border Colors */
-    --border: #333333;
-    /* Subtle Grey */
-    --border-color: #333333;
-    /* Alias */
+    --border: #E0EBEB;
+    --border-color: #E0EBEB;
+    --border-subtle: #EDF4F4;
 
     /* Brand Colors */
-    --primary: #E0AA3E;
-    /* Executive Gold */
-    --primary-color: #E0AA3E;
-    /* Alias */
+    --primary: #0D5254;
+    --primary-color: #0D5254;
+    --primary-hover: #003F46;
+    --accent: #2AAB91;
+    --accent-color: #2AAB91;
+    --brand-teal: #1F8180;
+    --brand-mint: #2AAB91;
+    --brand-dark-teal: #003F46;
+    --brand-deep-teal: #0D5254;
 
     /* Semantic Colors */
-    --success-color: #10B981;
-    /* Green for success states */
+    --success-color: #2AAB91;
     --warning-color: #F59E0B;
-    /* Amber for warnings */
     --danger-color: #EF4444;
-    /* Red for errors/danger */
-    --info-color: #3B82F6;
-    /* Blue for info */
-    --accent-color: #2CA58D;
-    /* Teal accent */
+    --info-color: #1F8180;
 
     /* Border Radius */
-    --radius-sm: 4px;
-    --radius-md: 8px;
-    --radius-lg: 12px;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --radius-xl: 18px;
 
     /* Spacing */
     --spacing-xs: 0.25rem;
-    /* 4px */
     --spacing-sm: 0.5rem;
-    /* 8px */
     --spacing-md: 1rem;
-    /* 16px */
     --spacing-lg: 1.5rem;
-    /* 24px */
     --spacing-xl: 2rem;
-    /* 32px */
 
     /* Typography */
     --font-primary: 'Inter', system-ui, -apple-system, sans-serif;
@@ -80,9 +65,9 @@
     --font-mono: 'Fira Code', 'Courier New', monospace;
 
     /* Shadows */
-    --shadow-sm: none;
-    --shadow-md: none;
-    --shadow-lg: none;
+    --shadow-sm: 0 1px 3px rgba(13, 82, 84, 0.05);
+    --shadow-md: 0 4px 12px rgba(13, 82, 84, 0.08);
+    --shadow-lg: 0 10px 25px -5px rgba(13, 82, 84, 0.12);
 
     /* Z-Index Layers */
     --z-dropdown: 1000;
@@ -91,74 +76,74 @@
 }
 
 /* ========================================
-   LIGHT MODE
+   DARK MODE
    ======================================== */
-[data-theme="light"] {
+[data-theme="dark"] {
     /* Background Colors */
-    --bg-page: #FFFFFF;
-    /* Pure White */
-    --bg-surface: #FFFFFF;
-    /* White */
-    --bg-card: #FFFFFF;
-    /* Card background */
-    --bg-input: #F9FAFB;
-    /* Light Grey Input */
-    --bg-hover: #F3F4F6;
-    /* Light Hover */
+    --bg-page: #001A1D;
+    --bg-surface: #002B30;
+    --bg-card: #002B30;
+    --bg-input: #001A1D;
+    --bg-hover: #0D5254;
+    --bg-sidebar: #001518;
+    --bg-sidebar-hover: #002B30;
 
     /* Text Colors */
-    --text-primary: #000000;
-    /* Pure Black */
-    --text-secondary: #374151;
-    /* Grey 700 */
-    --text-muted: #6B7280;
-    /* Grey 500 */
-    --text-main: #000000;
-    /* Alias for primary */
+    --text-primary: #FFFFFF;
+    --text-secondary: #A0C2C3;
+    --text-muted: #6B9192;
+    --text-main: #FFFFFF;
+    --text-inverse: #001A1D;
 
     /* Border Colors */
-    --border: #E5E5E5;
-    /* Light Grey Border */
-    --border-color: #E5E5E5;
-    /* Alias */
+    --border: #0D5254;
+    --border-color: #0D5254;
+    --border-subtle: #003F46;
 
     /* Brand Colors */
-    --primary: #E0AA3E;
-    /* Executive Gold (darker for contrast) */
-    --primary-color: #E0AA3E;
-    /* Alias */
+    --primary: #2AAB91;
+    --primary-color: #2AAB91;
+    --primary-hover: #1F8180;
+    --accent: #2AAB91;
+    --accent-color: #2AAB91;
+    --brand-teal: #1F8180;
+    --brand-mint: #2AAB91;
+    --brand-dark-teal: #003F46;
+    --brand-deep-teal: #0D5254;
 
     /* Semantic Colors */
-    --success-color: #16A34A;
-    /* Green 600 */
-    --warning-color: #D97706;
-    /* Amber 600 */
-    --danger-color: #DC2626;
-    /* Red 600 */
-    --info-color: #2563EB;
-    /* Blue 600 */
-    --accent-color: #0D9488;
-    /* Teal 600 */
+    --success-color: #2AAB91;
+    --warning-color: #F59E0B;
+    --danger-color: #EF4444;
+    --info-color: #1F8180;
 
-    /* Shadows - Light mode has shadows */
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    /* Shadows */
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.5);
 }
 
 /* ========================================
-   UTILITY: Gold Gradient (For Buttons)
+   UTILITY: Montera Brand Gradients
    ======================================== */
+.montera-gradient {
+    background: linear-gradient(135deg, #0D5254 0%, #2AAB91 100%);
+}
+
+.mint-gradient {
+    background: linear-gradient(135deg, #1F8180 0%, #2AAB91 100%);
+}
+
 .gold-gradient {
-    background: linear-gradient(135deg, #FFD700 0%, #E0AA3E 100%);
+    background: linear-gradient(135deg, #0D5254 0%, #2AAB91 100%);
 }
 
 /* ========================================
    UTILITY: Glassmorphism
    ======================================== */
 .glass-effect {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(13, 82, 84, 0.06);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(42, 171, 145, 0.2);
 }

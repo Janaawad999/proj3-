@@ -1,9 +1,9 @@
-/* DashboardsPage - MicroMind V4 Executive Gold Design System */
+/* DashboardsPage - MONTERA Design System */
 
 /* =============== LAYOUT =============== */
 .dashboards-container {
     padding: 0;
-    color: var(--text-primary, #F2F3EC);
+    color: var(--text-primary);
 }
 
 /* =============== HEADER =============== */
@@ -26,7 +26,7 @@
     align-items: center;
     gap: 6px;
     margin-bottom: 4px;
-    color: #E0AA3E;
+    color: #2AAB91;
     font-size: 11px;
     font-weight: 700;
     text-transform: uppercase;
@@ -36,14 +36,14 @@
 .dashboards-header h1 {
     font-size: 1.5rem;
     font-weight: 700;
-    color: var(--text-primary, #F2F3EC);
+    color: var(--text-primary);
     margin: 0 0 4px 0;
     line-height: 1.3;
 }
 
 .dashboards-header p {
     font-size: 0.85rem;
-    color: var(--text-secondary, #888);
+    color: var(--text-secondary);
     margin: 0;
 }
 
@@ -53,21 +53,22 @@
     align-items: center;
     gap: 8px;
     padding: 10px 20px;
-    background: linear-gradient(135deg, #E0AA3E 0%, #F5C451 100%);
+    background: linear-gradient(135deg, #0D5254 0%, #2AAB91 100%);
     border: none;
     border-radius: 8px;
-    color: #000;
+    color: #FFFFFF;
     font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
     white-space: nowrap;
     flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(42, 171, 145, 0.25);
 }
 
 .create-btn:hover {
-    background: linear-gradient(135deg, #F5C451 0%, #FFD700 100%);
-    box-shadow: 0 4px 12px rgba(224, 170, 62, 0.3);
+    background: linear-gradient(135deg, #003F46 0%, #1F8180 100%);
+    box-shadow: 0 4px 12px rgba(42, 171, 145, 0.35);
     transform: translateY(-1px);
 }
 
@@ -90,7 +91,7 @@
     left: 12px;
     top: 50%;
     transform: translateY(-50%);
-    color: #E0AA3E;
+    color: #2AAB91;
     pointer-events: none;
 }
 
@@ -102,10 +103,10 @@
 .dash-search-input {
     width: 100%;
     padding: 10px 12px 10px 42px;
-    background: var(--bg-secondary, #262626);
-    border: 1px solid var(--border-subtle, #333);
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
     border-radius: 8px;
-    color: var(--text-primary, #F2F3EC);
+    color: var(--text-primary);
     font-size: 0.85rem;
     outline: none;
     transition: all 0.2s ease;
@@ -117,12 +118,12 @@
 }
 
 .dash-search-input::placeholder {
-    color: var(--text-muted, #666);
+    color: var(--text-muted);
 }
 
 .dash-search-input:focus {
-    border-color: #E0AA3E;
-    box-shadow: 0 0 0 2px rgba(224, 170, 62, 0.15);
+    border-color: #2AAB91;
+    box-shadow: 0 0 0 2px rgba(42, 171, 145, 0.2);
 }
 
 /* =============== LOADING STATE =============== */
@@ -133,11 +134,11 @@
     justify-content: center;
     padding: 80px 20px;
     gap: 16px;
-    color: var(--text-muted, #666);
+    color: var(--text-muted);
 }
 
 .dashboards-loading .spinner {
-    color: #E0AA3E;
+    color: #2AAB91;
     animation: spin 1s linear infinite;
 }
 
@@ -188,22 +189,22 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--bg-secondary, #262626);
+    background: rgba(42, 171, 145, 0.1);
     border-radius: 16px;
-    border: 1px solid var(--border-subtle, #333);
-    color: #E0AA3E;
+    border: 1px solid rgba(42, 171, 145, 0.2);
+    color: #2AAB91;
     margin-bottom: 8px;
 }
 
 .empty-dashboards-container h3 {
-    color: var(--text-primary, #F2F3EC);
+    color: var(--text-primary);
     font-size: 1.1rem;
     font-weight: 600;
     margin: 0;
 }
 
 .empty-dashboards-container p {
-    color: var(--text-muted, #666);
+    color: var(--text-muted);
     font-size: 0.85rem;
     margin: 0;
     max-width: 400px;
@@ -216,9 +217,9 @@
     gap: 8px;
     padding: 10px 24px;
     background: transparent;
-    border: 1px solid #E0AA3E;
+    border: 1px solid #2AAB91;
     border-radius: 8px;
-    color: #E0AA3E;
+    color: #2AAB91;
     font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
@@ -227,9 +228,9 @@
 }
 
 .empty-create-btn:hover {
-    background: rgba(224, 170, 62, 0.1);
-    border-color: #F5C451;
-    color: #F5C451;
+    background: rgba(42, 171, 145, 0.1);
+    border-color: #0D5254;
+    color: #0D5254;
 }
 
 /* =============== RTL SUPPORT =============== */

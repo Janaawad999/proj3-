@@ -168,14 +168,20 @@
 }
 
 .mm-btn-primary {
-    background: linear-gradient(135deg, #FFD700 0%, #E0AA3E 100%);
-    color: #000;
+    background: linear-gradient(135deg, #0D5254 0%, #2AAB91 100%);
+    color: #FFFFFF;
     border: none;
     padding: 10px 20px;
     border-radius: 6px;
     font-weight: 600;
     cursor: pointer;
-    transition: opacity 0.2s;
+    transition: opacity 0.2s, transform 0.2s;
+    box-shadow: 0 2px 8px rgba(42, 171, 145, 0.25);
+}
+
+.mm-btn-primary:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(42, 171, 145, 0.35);
 }
 
 .mm-btn-primary:disabled {

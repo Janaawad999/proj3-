@@ -1,4 +1,4 @@
-/* MMSwitch.css */
+/* MMSwitch.css - MONTERA */
 .mm-switch-wrapper {
     display: inline-flex;
     align-items: center;
@@ -24,8 +24,8 @@
     position: relative;
     width: 44px;
     height: 24px;
-    background: var(--bg-hover, #262626);
-    border: 1px solid var(--border-color, #333);
+    background: var(--bg-hover, #F8FAFA);
+    border: 1px solid var(--border-color, #E0EBEB);
     border-radius: 12px;
     transition: all 0.3s;
 }
@@ -37,34 +37,34 @@
     height: 18px;
     left: 2px;
     top: 2px;
-    background: var(--text-muted, #888);
+    background: var(--text-muted, #688A8C);
     border-radius: 50%;
     transition: all 0.3s;
 }
 
 .mm-switch-input:checked+.mm-switch-slider {
-    background: var(--primary, #E0AA3E);
-    border-color: var(--primary, #E0AA3E);
+    background: #2AAB91;
+    border-color: #2AAB91;
 }
 
 .mm-switch-input:checked+.mm-switch-slider::before {
     transform: translateX(20px);
-    background: #000;
+    background: #FFFFFF;
 }
 
 .mm-switch-input:focus+.mm-switch-slider {
-    box-shadow: 0 0 0 2px rgba(224, 170, 62, 0.2);
+    box-shadow: 0 0 0 2px rgba(42, 171, 145, 0.2);
 }
 
 .mm-switch-wrapper:hover:not(.disabled) .mm-switch-slider {
-    border-color: var(--primary, #E0AA3E);
+    border-color: #2AAB91;
 }
 
 .mm-switch-label {
     font-size: 14px;
-    color: var(--text-primary, #fff);
+    color: var(--text-primary, #001A1D);
 }
 
 .mm-switch-wrapper.disabled .mm-switch-label {
-    color: var(--text-muted, #888);
+    color: var(--text-muted, #688A8C);
 }

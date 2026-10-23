@@ -16,8 +16,8 @@ const configuration = new Configuration({
 const openai = new OpenAIApi(configuration);
 
 // AI MicroMind configuration
-const AI_MICROMIND_URL = process.env.AI_MICROMIND_API_URL;
-const AI_MICROMIND_KEY = process.env.AI_MICROMIND_API_KEY;
+const AI_MICROMIND_URL = process.env.MICROMIND_API_URL || process.env.AI_MICROMIND_API_URL || process.env.AI_API_URL || 'https://core.aimicromind.com/api/v1/prediction/75b44d00-588b-458e-ae1e-2ca79369119e';
+const AI_MICROMIND_KEY = process.env.MICROMIND_API_KEY || process.env.AI_MICROMIND_API_KEY || process.env.AI_API_KEY;
 
 /**
  * Chat completion with OpenAI GPT
@@ -168,18 +168,29 @@ async function textToSQL(naturalQuery, schema, organizationId) {
  */
 async function callMicroMind(endpoint, payload, organizationId) {
     try {
+        let targetUrl;
+        if (AI_MICROMIND_URL.includes('/api/v1/prediction/')) {
+            targetUrl = AI_MICROMIND_URL;
+        } else {
+            const cleanBase = AI_MICROMIND_URL.replace(/\/+$/, '');
+            const cleanEndpoint = endpoint ? (endpoint.startsWith('/') ? endpoint : `/${endpoint}`) : '';
+            targetUrl = `${cleanBase}${cleanEndpoint}`;
+        }
+
+        const headers = {
+            'Content-Type': 'application/json'
+        };
+        if (AI_MICROMIND_KEY) {
+            headers['Authorization'] = `Bearer ${AI_MICROMIND_KEY}`;
+        }
+
         const response = await axios.post(
-            `${AI_MICROMIND_URL}${endpoint}`,
+            targetUrl,
             {
                 ...payload,
                 organizationId
             },
-            {
-                headers: {
-                    'Authorization': `Bearer ${AI_MICROMIND_KEY}`,
-                    'Content-Type': 'application/json'
-                }
-            }
+            { headers }
         );
 
         return response.data;

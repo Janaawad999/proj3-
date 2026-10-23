@@ -28,20 +28,21 @@ const CustomSelect = ({ value, onChange, options, placeholder = 'Select...', ico
                 onClick={() => setIsOpen(!isOpen)}
                 style={{
                     backgroundColor: 'var(--bg-surface)',
-                    border: isOpen ? '1px solid #FFC107' : '1px solid var(--border)',
-                    borderRadius: '4px',
-                    padding: '0.625rem 1rem', // Matching standard input padding
+                    border: isOpen ? '1px solid #2AAB91' : '1px solid var(--border)',
+                    borderRadius: '8px',
+                    padding: '0.625rem 1rem',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     cursor: 'pointer',
                     color: 'var(--text-primary)',
                     fontSize: '0.9rem',
-                    transition: 'border-color 0.2s'
+                    transition: 'all 0.2s ease',
+                    boxShadow: isOpen ? '0 0 0 2px rgba(42, 171, 145, 0.2)' : 'none'
                 }}
             >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', overflow: 'hidden' }}>
-                    {Icon && <Icon size={16} color="#FFC107" />}
+                    {Icon && <Icon size={16} color="#2AAB91" />}
                     <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {selectedOption ? selectedOption.label : placeholder}
                     </span>
@@ -76,31 +77,30 @@ const CustomSelect = ({ value, onChange, options, placeholder = 'Select...', ico
                     overflowY: 'auto',
                     backgroundColor: 'var(--bg-surface)',
                     border: '1px solid var(--border)',
-                    borderRadius: '4px',
+                    borderRadius: '8px',
                     zIndex: 1000,
-                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.2)'
+                    boxShadow: '0 8px 24px rgba(0, 63, 70, 0.15)'
                 }}>
                     {options.map((option) => (
                         <div
                             key={option.value}
                             onClick={() => handleSelect(option.value)}
                             onMouseEnter={(e) => {
-                                e.currentTarget.style.backgroundColor = '#FFC107';
-                                e.currentTarget.style.color = '#000000';
+                                e.currentTarget.style.backgroundColor = 'rgba(42, 171, 145, 0.15)';
+                                e.currentTarget.style.color = '#0D5254';
                             }}
                             onMouseLeave={(e) => {
-                                const currentTheme = document.documentElement.getAttribute('data-theme');
-                                const selectedBg = currentTheme === 'light' ? '#F3F4F6' : '#333333';
-                                e.currentTarget.style.backgroundColor = option.value === value ? selectedBg : 'transparent';
-                                e.currentTarget.style.color = getComputedStyle(document.documentElement).getPropertyValue('--text-primary');
+                                e.currentTarget.style.backgroundColor = option.value === value ? 'rgba(42, 171, 145, 0.1)' : 'transparent';
+                                e.currentTarget.style.color = option.value === value ? '#0D5254' : 'var(--text-primary)';
                             }}
                             style={{
                                 padding: '0.75rem 1rem',
                                 cursor: 'pointer',
                                 fontSize: '0.9rem',
-                                color: 'var(--text-primary)',
-                                backgroundColor: option.value === value ? (document.documentElement.getAttribute('data-theme') === 'light' ? '#F3F4F6' : '#333333') : 'transparent',
-                                transition: 'background-color 0.1s'
+                                color: option.value === value ? '#0D5254' : 'var(--text-primary)',
+                                fontWeight: option.value === value ? '600' : '400',
+                                backgroundColor: option.value === value ? 'rgba(42, 171, 145, 0.1)' : 'transparent',
+                                transition: 'background-color 0.15s'
                             }}
                         >
                             {option.label}

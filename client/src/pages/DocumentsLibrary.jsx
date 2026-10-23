@@ -280,7 +280,7 @@ const DocumentsLibrary = () => {
                     {/* Results Count */}
                     <div>
                         <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '0.9rem', fontWeight: '500' }}>
-                            <strong style={{ color: '#E0AA3E', fontSize: '1.1rem' }}>{documents.length}</strong> {t('documents.stats.found')}
+                            <strong style={{ color: '#0D5254', fontSize: '1.1rem' }}>{documents.length}</strong> {t('documents.stats.found')}
                         </p>
                     </div>
                 </div>
@@ -438,9 +438,9 @@ const DocumentsLibrary = () => {
                                                     style={{
                                                         padding: '0.5rem 1rem',
                                                         borderRadius: '6px',
-                                                        border: '1px solid #E0AA3E',
+                                                        border: '1px solid #2AAB91',
                                                         backgroundColor: 'transparent',
-                                                        color: '#E0AA3E',
+                                                        color: '#2AAB91',
                                                         fontSize: '0.85rem',
                                                         fontWeight: '600',
                                                         cursor: 'pointer',
@@ -450,12 +450,12 @@ const DocumentsLibrary = () => {
                                                         gap: '0.5rem'
                                                     }}
                                                     onMouseEnter={(e) => {
-                                                        e.target.style.backgroundColor = '#E0AA3E';
-                                                        e.target.style.color = '#000000';
+                                                        e.target.style.backgroundColor = '#2AAB91';
+                                                        e.target.style.color = '#FFFFFF';
                                                     }}
                                                     onMouseLeave={(e) => {
                                                         e.target.style.backgroundColor = 'transparent';
-                                                        e.target.style.color = '#E0AA3E';
+                                                        e.target.style.color = '#2AAB91';
                                                     }}
                                                 >
                                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

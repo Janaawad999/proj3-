@@ -57,13 +57,13 @@ export default function LanguageSwitcher() {
                     justifyContent: 'space-between',
                     padding: '8px 12px',
                     borderRadius: '6px',
-                    backgroundColor: isOpen ? 'rgba(224, 170, 62, 0.12)' : 'transparent',
+                    backgroundColor: isOpen ? 'rgba(42, 171, 145, 0.15)' : 'transparent',
                     border: '1px solid var(--border-subtle)',
-                    color: isOpen ? '#E0AA3E' : 'var(--text-secondary)'
+                    color: isOpen ? '#2AAB91' : 'var(--text-secondary)'
                 }}
             >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <Globe size={16} style={{ color: isOpen ? '#E0AA3E' : 'var(--text-muted)' }} />
+                    <Globe size={16} style={{ color: isOpen ? '#2AAB91' : 'var(--text-muted)' }} />
                     <span style={{ fontSize: '13px', fontWeight: '500' }}>{currentLang.name}</span>
                 </div>
                 <ChevronUp
@@ -85,7 +85,7 @@ export default function LanguageSwitcher() {
                     backgroundColor: 'var(--bg-component)',
                     border: '1px solid var(--border-subtle)',
                     borderRadius: '8px',
-                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+                    boxShadow: '0 8px 32px rgba(0, 63, 70, 0.25)',
                     zIndex: 2000,
                     overflow: 'hidden',
                     animation: 'dropdownFadeIn 200ms cubic-bezier(0, 0, 0.2, 1)'
@@ -101,10 +101,10 @@ export default function LanguageSwitcher() {
                                     justifyContent: 'space-between',
                                     width: '100%',
                                     padding: '10px 12px',
-                                    background: lang.code === i18n.language ? 'rgba(224, 170, 62, 0.1)' : 'transparent',
+                                    background: lang.code === i18n.language ? 'rgba(42, 171, 145, 0.15)' : 'transparent',
                                     border: 'none',
                                     borderRadius: '4px',
-                                    color: lang.code === i18n.language ? '#E0AA3E' : 'var(--text-primary)',
+                                    color: lang.code === i18n.language ? '#2AAB91' : 'var(--text-primary)',
                                     fontSize: '13px',
                                     fontWeight: lang.code === i18n.language ? '600' : '400',
                                     cursor: 'pointer',
@@ -113,7 +113,7 @@ export default function LanguageSwitcher() {
                                 }}
                                 onMouseEnter={(e) => {
                                     if (lang.code !== i18n.language) {
-                                        e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.04)';
+                                        e.currentTarget.style.backgroundColor = 'rgba(42, 171, 145, 0.08)';
                                     }
                                 }}
                                 onMouseLeave={(e) => {
@@ -124,7 +124,7 @@ export default function LanguageSwitcher() {
                             >
                                 <span>{lang.name}</span>
                                 {lang.code === i18n.language && (
-                                    <div style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: '#E0AA3E' }} />
+                                    <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#2AAB91' }} />
                                 )}
                             </button>
                         ))}

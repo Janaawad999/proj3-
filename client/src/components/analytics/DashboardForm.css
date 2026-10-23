@@ -1,5 +1,5 @@
-/* DashboardForm - "New Intelligence Layer" Modal
-   MicroMind V4 Executive Gold Design System */
+/* DashboardForm - Intelligence Layer Modal
+   MONTERA Design System */
 
 /* =============== OVERLAY =============== */
 .df-overlay {
@@ -9,7 +9,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 31, 35, 0.7);
     -webkit-backdrop-filter: blur(6px);
     backdrop-filter: blur(6px);
     padding: 24px;
@@ -21,10 +21,10 @@
     max-width: 820px;
     max-height: 90vh;
     overflow-y: auto;
-    background: #1A1A1A;
-    border: 1px solid #333;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
     border-radius: 16px;
-    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 24px 48px rgba(0, 63, 70, 0.25);
 }
 
 .df-modal::-webkit-scrollbar {
@@ -36,7 +36,7 @@
 }
 
 .df-modal::-webkit-scrollbar-thumb {
-    background: #444;
+    background: #1F8180;
     border-radius: 3px;
 }
 
@@ -52,7 +52,7 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    color: #E0AA3E;
+    color: #2AAB91;
     font-size: 11px;
     font-weight: 700;
     text-transform: uppercase;
@@ -61,7 +61,7 @@
 }
 
 .df-title {
-    color: #F2F3EC;
+    color: var(--text-primary);
     font-size: 1.5rem;
     font-weight: 700;
     margin: 0;
@@ -70,23 +70,23 @@
 
 .df-close-btn {
     background: none;
-    border: 1px solid #444;
+    border: 1px solid var(--border);
     border-radius: 50%;
     width: 36px;
     height: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #888;
+    color: var(--text-muted);
     cursor: pointer;
     transition: all 0.2s ease;
     flex-shrink: 0;
 }
 
 .df-close-btn:hover {
-    color: #F2F3EC;
-    border-color: #666;
-    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+    border-color: #2AAB91;
+    background: rgba(42, 171, 145, 0.1);
 }
 
 /* =============== ERROR =============== */
@@ -130,17 +130,17 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.12em;
-    color: #E0AA3E;
+    color: #0D5254;
     margin-bottom: 8px;
 }
 
 .df-input {
     width: 100%;
     padding: 12px 14px;
-    background: #262626;
-    border: 1px solid #333;
-    border-radius: 6px;
-    color: #F2F3EC;
+    background: var(--bg-hover);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-primary);
     font-size: 0.875rem;
     font-family: inherit;
     outline: none;
@@ -149,21 +149,21 @@
 }
 
 .df-input:focus {
-    border-color: #E0AA3E;
-    box-shadow: 0 0 0 3px rgba(224, 170, 62, 0.1);
+    border-color: #2AAB91;
+    box-shadow: 0 0 0 3px rgba(42, 171, 145, 0.2);
 }
 
 .df-input::placeholder {
-    color: #555;
+    color: var(--text-muted);
 }
 
 .df-textarea {
     width: 100%;
     padding: 12px 14px;
-    background: #262626;
-    border: 1px solid #333;
-    border-radius: 6px;
-    color: #F2F3EC;
+    background: var(--bg-hover);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-primary);
     font-size: 0.875rem;
     font-family: inherit;
     outline: none;
@@ -174,12 +174,12 @@
 }
 
 .df-textarea:focus {
-    border-color: #E0AA3E;
-    box-shadow: 0 0 0 3px rgba(224, 170, 62, 0.1);
+    border-color: #2AAB91;
+    box-shadow: 0 0 0 3px rgba(42, 171, 145, 0.2);
 }
 
 .df-textarea::placeholder {
-    color: #555;
+    color: var(--text-muted);
 }
 
 /* =============== COVER IMAGE UPLOAD =============== */
@@ -194,12 +194,12 @@
     justify-content: center;
     gap: 8px;
     padding: 40px 20px;
-    background: #1E1E1E;
-    border: 2px dashed #444;
+    background: var(--bg-hover);
+    border: 2px dashed var(--border);
     border-radius: 10px;
     cursor: pointer;
     transition: all 0.2s ease;
-    color: #777;
+    color: var(--text-secondary);
     text-align: center;
     min-height: 180px;
     box-sizing: border-box;
@@ -207,13 +207,13 @@
 
 .df-upload-zone:hover,
 .df-upload-zone.drag-over {
-    border-color: #E0AA3E;
-    background: rgba(224, 170, 62, 0.03);
-    color: #E0AA3E;
+    border-color: #2AAB91;
+    background: rgba(42, 171, 145, 0.08);
+    color: #2AAB91;
 }
 
 .df-upload-link {
-    color: #E0AA3E;
+    color: #2AAB91;
     font-weight: 600;
 }
 
@@ -221,7 +221,7 @@
     font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: #555;
+    color: var(--text-muted);
     margin-top: 4px;
 }
 
@@ -233,7 +233,7 @@
     position: relative;
     border-radius: 10px;
     overflow: hidden;
-    border: 2px dashed #444;
+    border: 2px dashed var(--border);
     min-height: 180px;
 }
 
@@ -279,28 +279,28 @@
     gap: 10px;
     cursor: pointer;
     font-size: 0.875rem;
-    color: #888;
+    color: var(--text-secondary);
     transition: color 0.2s ease;
 }
 
 .df-checkbox-label:hover {
-    color: #F2F3EC;
+    color: var(--text-primary);
 }
 
 .df-checkbox {
     width: 18px;
     height: 18px;
-    border: 2px solid #444;
+    border: 2px solid var(--border);
     border-radius: 4px;
     cursor: pointer;
-    accent-color: #E0AA3E;
+    accent-color: #2AAB91;
     flex-shrink: 0;
 }
 
 /* =============== AI CONFIGURATION SECTION =============== */
 .df-ai-section {
-    background: #1E1E1E;
-    border: 1px solid rgba(224, 170, 62, 0.2);
+    background: var(--bg-hover);
+    border: 1px solid rgba(42, 171, 145, 0.2);
     border-radius: 12px;
     padding: 20px 24px 10px;
     margin-bottom: 24px;
@@ -310,15 +310,13 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    color: #E0AA3E;
+    color: #2AAB91;
     font-size: 11px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.12em;
     margin-bottom: 16px;
 }
-
-/* Inner spacing for AI fields is handled by .df-field margin-bottom */
 
 .df-ai-row {
     display: grid;
@@ -338,13 +336,13 @@
     gap: 12px;
     justify-content: center;
     padding-top: 20px;
-    border-top: 1px solid #333;
+    border-top: 1px solid var(--border);
 }
 
 .df-cancel-btn {
     padding: 12px 28px;
     background: transparent;
-    color: #777;
+    color: var(--text-secondary);
     border: none;
     font-weight: 600;
     font-size: 0.8rem;
@@ -355,7 +353,7 @@
 }
 
 .df-cancel-btn:hover {
-    color: #F2F3EC;
+    color: var(--text-primary);
 }
 
 .df-submit-btn {
@@ -363,8 +361,8 @@
     align-items: center;
     gap: 10px;
     padding: 14px 36px;
-    background: linear-gradient(135deg, #E0AA3E 0%, #F5C451 100%);
-    color: #000;
+    background: linear-gradient(135deg, #0D5254 0%, #2AAB91 100%);
+    color: #FFFFFF;
     border: none;
     border-radius: 8px;
     font-weight: 700;
@@ -373,13 +371,13 @@
     letter-spacing: 0.1em;
     cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: 0 2px 8px rgba(224, 170, 62, 0.3);
+    box-shadow: 0 2px 8px rgba(42, 171, 145, 0.25);
 }
 
 .df-submit-btn:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 16px rgba(224, 170, 62, 0.4);
-    background: linear-gradient(135deg, #F5C451 0%, #FFD700 100%);
+    box-shadow: 0 4px 16px rgba(42, 171, 145, 0.35);
+    background: linear-gradient(135deg, #003F46 0%, #1F8180 100%);
 }
 
 .df-submit-btn:disabled,

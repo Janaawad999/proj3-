@@ -1,4 +1,4 @@
-/* MMButton.css */
+/* MMButton.css - MONTERA */
 .mm-btn {
     display: inline-flex;
     align-items: center;
@@ -41,46 +41,51 @@
 }
 
 /* Variants */
-.mm-btn--gold {
-    background: linear-gradient(135deg, #FFD700 0%, #E6C200 100%);
-    color: #000;
-    box-shadow: 0 2px 10px rgba(255, 215, 0, 0.2);
+.mm-btn--gold,
+.mm-btn--primary,
+.mm-btn--montera {
+    background: linear-gradient(135deg, #0D5254 0%, #2AAB91 100%);
+    color: #FFFFFF;
+    box-shadow: 0 2px 10px rgba(42, 171, 145, 0.25);
 }
 
-.mm-btn--gold:hover:not(:disabled) {
+.mm-btn--gold:hover:not(:disabled),
+.mm-btn--primary:hover:not(:disabled),
+.mm-btn--montera:hover:not(:disabled) {
     transform: translateY(-1px);
-    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+    background: linear-gradient(135deg, #003F46 0%, #1F8180 100%);
+    box-shadow: 0 4px 15px rgba(42, 171, 145, 0.35);
 }
 
 .mm-btn--glass {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #fff;
+    background: rgba(13, 82, 84, 0.08);
+    border: 1px solid rgba(42, 171, 145, 0.2);
+    color: var(--text-primary);
 }
 
 .mm-btn--glass:hover:not(:disabled) {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(42, 171, 145, 0.15);
+    border-color: rgba(42, 171, 145, 0.4);
 }
 
 .mm-btn--danger {
-    background: rgba(255, 68, 68, 0.1);
-    border: 1px solid rgba(255, 68, 68, 0.2);
-    color: #ff4444;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    color: #EF4444;
 }
 
 .mm-btn--danger:hover:not(:disabled) {
-    background: rgba(255, 68, 68, 0.2);
+    background: rgba(239, 68, 68, 0.2);
 }
 
 .mm-btn--ghost {
     background: transparent;
-    color: var(--text-muted, #888);
+    color: var(--text-muted, #688A8C);
 }
 
 .mm-btn--ghost:hover:not(:disabled) {
-    color: #fff;
-    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+    background: rgba(42, 171, 145, 0.08);
 }
 
 /* Loader */

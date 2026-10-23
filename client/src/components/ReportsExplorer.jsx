@@ -256,11 +256,11 @@ const ReportsExplorer = () => {
                             onClick={() => setViewMode('summary')}
                             style={{
                                 padding: '0.5rem 1rem',
-                                backgroundColor: viewMode === 'summary' ? '#FFC107' : 'transparent',
-                                color: viewMode === 'summary' ? '#000' : 'var(--text-primary)',
+                                background: viewMode === 'summary' ? 'linear-gradient(135deg, #0D5254 0%, #1F8180 100%)' : 'transparent',
+                                color: viewMode === 'summary' ? '#FFFFFF' : 'var(--text-primary)',
                                 border: '1px solid',
-                                borderColor: viewMode === 'summary' ? '#FFC107' : 'var(--border)',
-                                borderRadius: '4px',
+                                borderColor: viewMode === 'summary' ? '#0D5254' : 'var(--border)',
+                                borderRadius: '6px',
                                 cursor: 'pointer',
                                 fontWeight: '600',
                                 fontSize: '0.9rem'
@@ -272,11 +272,11 @@ const ReportsExplorer = () => {
                             onClick={() => setViewMode('details')}
                             style={{
                                 padding: '0.5rem 1rem',
-                                backgroundColor: viewMode === 'details' ? '#FFC107' : 'transparent',
-                                color: viewMode === 'details' ? '#000' : 'var(--text-primary)',
+                                background: viewMode === 'details' ? 'linear-gradient(135deg, #0D5254 0%, #1F8180 100%)' : 'transparent',
+                                color: viewMode === 'details' ? '#FFFFFF' : 'var(--text-primary)',
                                 border: '1px solid',
-                                borderColor: viewMode === 'details' ? '#FFC107' : 'var(--border)',
-                                borderRadius: '4px',
+                                borderColor: viewMode === 'details' ? '#0D5254' : 'var(--border)',
+                                borderRadius: '6px',
                                 cursor: 'pointer',
                                 fontWeight: '600',
                                 fontSize: '0.9rem'
@@ -453,7 +453,7 @@ const ReportsExplorer = () => {
                         margin: '1rem 0 0 0',
                         padding: '1rem',
                         backgroundColor: 'var(--bg-hover)',
-                        borderLeft: '3px solid #E0AA3E',
+                        borderLeft: '3px solid #2AAB91',
                         borderRadius: '4px',
                         color: 'var(--text-primary)',
                         fontSize: '0.9rem'
@@ -558,16 +558,12 @@ const ReportsExplorer = () => {
                             alignItems: 'center',
                             gap: '0.5rem',
                             opacity: loading ? 0.7 : 1,
-                            backgroundColor: '#FFC107',
-                            color: '#000000',
+                            background: 'linear-gradient(135deg, #0D5254 0%, #2AAB91 100%)',
+                            color: '#FFFFFF',
                             border: 'none',
-                            fontWeight: '600'
-                        }}
-                        onMouseEnter={(e) => {
-                            if (!loading) e.target.style.backgroundColor = '#E0AA3E';
-                        }}
-                        onMouseLeave={(e) => {
-                            if (!loading) e.target.style.backgroundColor = '#FFC107';
+                            fontWeight: '600',
+                            borderRadius: '8px',
+                            boxShadow: '0 2px 8px rgba(42, 171, 145, 0.25)'
                         }}
                     >
                         {loading ? (
@@ -647,10 +643,10 @@ const ReportsExplorer = () => {
                     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                         <thead>
                             <tr style={{ backgroundColor: 'var(--bg-hover)', borderBottom: '1px solid var(--border)' }}>
-                                <th style={{ padding: '1rem', textAlign: 'start', color: '#FFC107', fontWeight: '600', fontSize: '0.85rem', textTransform: 'uppercase' }}>{t('reportsExplorer.columns.reportName')}</th>
-                                <th style={{ padding: '1rem', textAlign: 'start', color: '#FFC107', fontWeight: '600', fontSize: '0.85rem', textTransform: 'uppercase' }}>{t('reportsExplorer.columns.date')}</th>
-                                <th style={{ padding: '1rem', textAlign: 'start', color: '#FFC107', fontWeight: '600', fontSize: '0.85rem', textTransform: 'uppercase' }}>{t('reportsExplorer.columns.generatedBy')}</th>
-                                <th style={{ padding: '1rem', textAlign: 'end', color: '#FFC107', fontWeight: '600', fontSize: '0.85rem', textTransform: 'uppercase' }}>{t('reportsExplorer.columns.action')}</th>
+                                <th style={{ padding: '1rem', textAlign: 'start', color: '#0D5254', fontWeight: '600', fontSize: '0.85rem', textTransform: 'uppercase' }}>{t('reportsExplorer.columns.reportName')}</th>
+                                <th style={{ padding: '1rem', textAlign: 'start', color: '#0D5254', fontWeight: '600', fontSize: '0.85rem', textTransform: 'uppercase' }}>{t('reportsExplorer.columns.date')}</th>
+                                <th style={{ padding: '1rem', textAlign: 'start', color: '#0D5254', fontWeight: '600', fontSize: '0.85rem', textTransform: 'uppercase' }}>{t('reportsExplorer.columns.generatedBy')}</th>
+                                <th style={{ padding: '1rem', textAlign: 'end', color: '#0D5254', fontWeight: '600', fontSize: '0.85rem', textTransform: 'uppercase' }}>{t('reportsExplorer.columns.action')}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -659,7 +655,7 @@ const ReportsExplorer = () => {
                                 <td style={{ padding: '1rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Dec 05, 2025</td>
                                 <td style={{ padding: '1rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>You</td>
                                 <td style={{ padding: '1rem', textAlign: 'right' }}>
-                                    <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#FFC107' }}>
+                                    <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#2AAB91' }}>
                                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
                                     </button>
                                 </td>
@@ -669,7 +665,7 @@ const ReportsExplorer = () => {
                                 <td style={{ padding: '1rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Dec 04, 2025</td>
                                 <td style={{ padding: '1rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>You</td>
                                 <td style={{ padding: '1rem', textAlign: 'right' }}>
-                                    <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#FFC107' }}>
+                                    <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#2AAB91' }}>
                                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
                                     </button>
                                 </td>
@@ -679,7 +675,7 @@ const ReportsExplorer = () => {
                                 <td style={{ padding: '1rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Dec 01, 2025</td>
                                 <td style={{ padding: '1rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>You</td>
                                 <td style={{ padding: '1rem', textAlign: 'right' }}>
-                                    <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#FFC107' }}>
+                                    <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#2AAB91' }}>
                                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
                                     </button>
                                 </td>

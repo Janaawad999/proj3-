@@ -1,0 +1,395 @@
+/* =========================================================
+   AGRIPULSE DESIGN SYSTEM — LIVING INTELLIGENCE
+   Nature + Engineering + Intelligence
+   ========================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
+
+:root {
+  /* Living Intelligence Color Tokens */
+  --bg-page: #F6F5EF;          /* Warm Ivory */
+  --bg-surface: #FFFFFF;
+  --bg-subtle: #EFEFE7;
+  --bg-sidebar: #F0EFEA;
+  --bg-sidebar-hover: #E4E3DC;
+  --bg-evergreen: #102D27;     /* Deep Evergreen high-contrast */
+  --bg-evergreen-card: #153831;
+  
+  --primary: #173F35;          /* Forest Green */
+  --primary-hover: #12332B;
+  
+  --accent-lime: #C7F36B;      /* Fresh Lime */
+  --accent-lime-hover: #B5E655;
+  --accent-sage: #DCE7D8;      /* Sage */
+  
+  --text-primary: #252B28;     /* Graphite */
+  --text-secondary: #858A80;   /* Muted Stone */
+  --text-inverse: #F6F5EF;
+  
+  --border: #D8D7CD;
+  --border-subtle: #E6E5DC;
+  --border-evergreen: #1C4B40;
+  
+  --status-healthy: #173F35;
+  --status-warning: #E7A944;   /* Amber */
+  --status-critical: #D94C45;  /* Signal Red */
+  
+  --font-family: 'Manrope', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--bg-page);
+  color: var(--text-primary);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Tabular figures for telemetry */
+.font-mono, .tabular-nums {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* App Shell Structure */
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 240px;
+  background-color: var(--bg-sidebar);
+  border-right: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 40;
+  transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+}
+
+.sidebar.collapsed {
+  width: 68px;
+}
+
+.sidebar-header {
+  height: 56px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 12px 10px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.nav-section-title {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: #9BA199;
+  text-transform: uppercase;
+  padding: 8px 10px 4px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #555A52;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  position: relative;
+  width: 100%;
+  text-align: left;
+}
+
+.nav-item:hover {
+  background-color: var(--bg-sidebar-hover);
+  color: var(--primary);
+}
+
+.nav-item.active {
+  background-color: var(--primary);
+  color: #F6F5EF;
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(23, 63, 53, 0.15);
+}
+
+.nav-item.active svg {
+  color: var(--accent-lime);
+}
+
+.nav-item.active::before {
+  content: '';
+  position: absolute;
+  left: -10px;
+  top: 15%;
+  height: 70%;
+  width: 4px;
+  border-radius: 0 3px 3px 0;
+  background-color: var(--accent-lime);
+}
+
+.nav-badge {
+  font-size: 0.65rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 4px;
+  margin-left: auto;
+  background-color: rgba(23, 63, 53, 0.1);
+  color: var(--primary);
+}
+
+.nav-item.active .nav-badge {
+  background-color: var(--accent-lime);
+  color: var(--primary);
+}
+
+.nav-badge.alert {
+  background-color: #FDECEC;
+  color: var(--status-critical);
+}
+
+.nav-item.active .nav-badge.alert {
+  background-color: var(--status-critical);
+  color: #FFFFFF;
+}
+
+.sidebar-footer {
+  padding: 12px 10px;
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.user-plate {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  background-color: #E6E5DC;
+  border-radius: 6px;
+}
+
+.user-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: var(--primary);
+  color: var(--accent-lime);
+  font-weight: 700;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Main Content Area */
+.main-wrapper {
+  flex: 1;
+  margin-left: 240px;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  transition: margin-left 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar.collapsed ~ .main-wrapper {
+  margin-left: 68px;
+}
+
+/* Top Navbar */
+.top-navbar {
+  height: 56px;
+  background-color: var(--bg-page);
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 30;
+}
+
+/* Content Canvas */
+.content-canvas {
+  flex: 1;
+  padding: 24px 32px;
+  overflow-y: auto;
+}
+
+/* UI Cards */
+.agri-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(23, 63, 53, 0.04);
+  padding: 20px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.agri-card:hover {
+  border-color: var(--border);
+  box-shadow: 0 4px 14px rgba(23, 63, 53, 0.05);
+}
+
+.agri-evergreen-panel {
+  background-color: var(--bg-evergreen);
+  color: var(--text-inverse);
+  border: 1px solid var(--border-evergreen);
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 12px 30px rgba(16, 45, 39, 0.25);
+}
+
+/* Buttons */
+.agri-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: 1px solid transparent;
+  font-family: inherit;
+  text-decoration: none;
+}
+
+.agri-btn-primary {
+  background-color: var(--primary);
+  color: #FFFFFF;
+}
+
+.agri-btn-primary:hover {
+  background-color: var(--primary-hover);
+  transform: translateY(-0.5px);
+}
+
+.agri-btn-lime {
+  background-color: var(--accent-lime);
+  color: var(--bg-evergreen);
+  font-weight: 700;
+}
+
+.agri-btn-lime:hover {
+  background-color: var(--accent-lime-hover);
+  transform: translateY(-0.5px);
+}
+
+.agri-btn-outline {
+  background-color: transparent;
+  border-color: var(--border);
+  color: var(--text-primary);
+}
+
+.agri-btn-outline:hover {
+  background-color: var(--bg-subtle);
+  border-color: var(--primary);
+}
+
+/* Badges */
+.agri-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+}
+
+.badge-healthy {
+  background-color: var(--accent-sage);
+  color: var(--status-healthy);
+}
+
+.badge-warning {
+  background-color: #FDF4E6;
+  color: #925805;
+  border: 1px solid #F5D8A3;
+}
+
+.badge-critical {
+  background-color: #FDECEC;
+  color: #9E1F1A;
+  border: 1px solid #F8B4B1;
+}
+
+.badge-simulation {
+  background-color: #ECEBE4;
+  color: #555A52;
+  border: 1px solid #D5D4CA;
+  font-size: 0.65rem;
+}
+
+/* Hydraulic Water Flow Keyframes */
+@keyframes flow-pulse {
+  0% { stroke-dashoffset: 40; }
+  100% { stroke-dashoffset: 0; }
+}
+
+.animate-water-flow {
+  stroke-dasharray: 6 4;
+  animation: flow-pulse 1.2s linear infinite;
+}
+
+/* Pulse animation */
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 2s ease-in-out infinite;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background-color: rgba(23, 63, 53, 0.2);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(23, 63, 53, 0.4);
+}

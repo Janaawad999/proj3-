@@ -1,4 +1,4 @@
-/* ═════════════════════════ Docs Hub Page ═════════════════════════ */
+/* ═════════════════════════ Docs Hub Page - MONTERA ═════════════════════════ */
 .docs-page {
     max-width: 1100px;
     margin: 0 auto;
@@ -19,21 +19,22 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, rgba(224, 170, 62, 0.2) 0%, rgba(224, 170, 62, 0.05) 100%);
-    color: var(--primary, #E0AA3E);
+    background: linear-gradient(135deg, #0D5254 0%, #2AAB91 100%);
+    color: #FFFFFF;
+    box-shadow: 0 4px 12px rgba(42, 171, 145, 0.25);
 }
 
 .docs-hero-title {
     font-size: 2rem;
     font-weight: 800;
-    color: var(--text-primary, #F2F3EC);
+    color: var(--text-primary);
     margin: 0 0 0.5rem;
     letter-spacing: -0.02em;
 }
 
 .docs-hero-subtitle {
     font-size: 1rem;
-    color: var(--text-secondary, #A0A0A0);
+    color: var(--text-secondary);
     margin: 0 0 1.5rem;
     max-width: 600px;
     margin-inline: auto;
@@ -52,7 +53,7 @@
     left: 14px;
     top: 50%;
     transform: translateY(-50%);
-    color: var(--text-secondary, #A0A0A0);
+    color: #2AAB91;
     pointer-events: none;
 }
 
@@ -60,9 +61,9 @@
     width: 100%;
     padding: 12px 16px 12px 42px;
     border-radius: 12px;
-    border: 1px solid var(--border, #2A2A2A);
-    background: var(--bg-card, #1C1C1C);
-    color: var(--text-primary, #F2F3EC);
+    border: 1px solid var(--border);
+    background: var(--bg-surface);
+    color: var(--text-primary);
     font-size: 0.9rem;
     outline: none;
     transition: border-color 0.2s, box-shadow 0.2s;
@@ -70,12 +71,12 @@
 }
 
 .docs-search-input::placeholder {
-    color: var(--text-secondary, #A0A0A0);
+    color: var(--text-muted);
 }
 
 .docs-search-input:focus {
-    border-color: var(--primary, #E0AA3E);
-    box-shadow: 0 0 0 3px rgba(224, 170, 62, 0.1);
+    border-color: #2AAB91;
+    box-shadow: 0 0 0 3px rgba(42, 171, 145, 0.2);
 }
 
 /* ── Quick Links ── */
@@ -93,18 +94,18 @@
     gap: 6px;
     padding: 6px 14px;
     border-radius: 20px;
-    border: 1px solid var(--border, #2A2A2A);
+    border: 1px solid var(--border);
     background: transparent;
-    color: var(--text-secondary, #A0A0A0);
+    color: var(--text-secondary);
     font-size: 0.8rem;
     cursor: pointer;
     transition: all 0.2s;
 }
 
 .docs-quick-link:hover {
-    border-color: var(--primary, #E0AA3E);
-    color: var(--primary, #E0AA3E);
-    background: rgba(224, 170, 62, 0.06);
+    border-color: #2AAB91;
+    color: #2AAB91;
+    background: rgba(42, 171, 145, 0.1);
 }
 
 /* ── Category Grid ── */
@@ -124,7 +125,7 @@
 
 .docs-card-wrapper:not(.docs-coming-soon):hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 8px 24px rgba(0, 63, 70, 0.15);
 }
 
 .docs-category-card {
@@ -172,20 +173,20 @@
     letter-spacing: 0.08em;
     padding: 3px 8px;
     border-radius: 6px;
-    background: rgba(148, 163, 184, 0.12);
-    color: #94A3B8;
+    background: rgba(42, 171, 145, 0.12);
+    color: #2AAB91;
 }
 
 .docs-card-title {
     font-size: 1rem;
     font-weight: 700;
-    color: var(--text-primary, #F2F3EC);
+    color: var(--text-primary);
     margin: 0 0 0.35rem;
 }
 
 .docs-card-desc {
     font-size: 0.82rem;
-    color: var(--text-secondary, #A0A0A0);
+    color: var(--text-secondary);
     margin: 0 0 0.75rem;
     line-height: 1.5;
 }
@@ -201,17 +202,17 @@
     align-items: center;
     gap: 5px;
     font-size: 0.75rem;
-    color: var(--text-secondary, #A0A0A0);
+    color: var(--text-secondary);
 }
 
 .docs-card-arrow {
-    color: var(--text-secondary, #A0A0A0);
+    color: var(--text-secondary);
     transition: transform 0.2s, color 0.2s;
 }
 
 .docs-card-wrapper:not(.docs-coming-soon):hover .docs-card-arrow {
     transform: translateX(3px);
-    color: var(--primary, #E0AA3E);
+    color: #2AAB91;
 }
 
 /* ── AI Agents Tip ── */
@@ -221,8 +222,8 @@
     gap: 12px;
     padding: 1rem 1.25rem;
     border-radius: 12px;
-    border: 1px solid rgba(224, 170, 62, 0.15);
-    background: rgba(224, 170, 62, 0.04);
+    border: 1px solid rgba(42, 171, 145, 0.25);
+    background: rgba(42, 171, 145, 0.06);
 }
 
 .docs-ai-tip-icon {
@@ -233,24 +234,23 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    background: rgba(224, 170, 62, 0.12);
-    color: var(--primary, #E0AA3E);
+    background: rgba(42, 171, 145, 0.15);
+    color: #2AAB91;
 }
 
 .docs-ai-tip-content strong {
     display: block;
     font-size: 0.85rem;
-    color: var(--primary, #E0AA3E);
+    color: #0D5254;
     margin-bottom: 2px;
 }
 
 .docs-ai-tip-content p {
     font-size: 0.8rem;
-    color: var(--text-secondary, #A0A0A0);
+    color: var(--text-secondary);
     margin: 0;
     line-height: 1.5;
 }
-
 
 /* ═════════════════════════ Docs Viewer ═════════════════════════ */
 .docs-viewer {
@@ -282,7 +282,7 @@
     align-items: center;
     gap: 6px;
     font-size: 0.8rem;
-    color: var(--text-secondary, #A0A0A0);
+    color: var(--text-secondary);
     background: none;
     border: none;
     cursor: pointer;
@@ -293,7 +293,7 @@
 }
 
 .docs-sidebar-back:hover {
-    color: var(--primary, #E0AA3E);
+    color: #2AAB91;
 }
 
 .docs-sidebar-category {
@@ -301,7 +301,7 @@
 }
 
 .docs-sidebar-category+.docs-sidebar-category {
-    border-top: 1px solid var(--border, #2A2A2A);
+    border-top: 1px solid var(--border);
     padding-top: 0.75rem;
 }
 
@@ -310,7 +310,7 @@
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: var(--primary, #E0AA3E);
+    color: #0D5254;
     padding: 6px 10px;
     margin-bottom: 2px;
 }
@@ -323,7 +323,7 @@
     padding: 6px 10px 6px 18px;
     border: none;
     background: none;
-    color: var(--text-secondary, #A0A0A0);
+    color: var(--text-secondary);
     font-size: 0.8rem;
     text-align: start;
     cursor: pointer;
@@ -334,16 +334,16 @@
 }
 
 .docs-sidebar-link:hover {
-    background: var(--bg-hover, rgba(255, 255, 255, 0.04));
-    color: var(--text-primary, #F2F3EC);
-    border-left-color: rgba(224, 170, 62, 0.3);
+    background: rgba(42, 171, 145, 0.08);
+    color: var(--text-primary);
+    border-left-color: rgba(42, 171, 145, 0.4);
 }
 
 .docs-sidebar-link.active {
-    background: rgba(224, 170, 62, 0.1);
-    color: var(--primary, #E0AA3E);
+    background: rgba(42, 171, 145, 0.15);
+    color: #2AAB91;
     font-weight: 600;
-    border-left-color: var(--primary, #E0AA3E);
+    border-left-color: #2AAB91;
 }
 
 .docs-sidebar-link .chevron {
@@ -368,12 +368,12 @@
     align-items: center;
     gap: 6px;
     font-size: 0.78rem;
-    color: var(--text-secondary, #A0A0A0);
+    color: var(--text-secondary);
     margin-bottom: 1.25rem;
 }
 
 .docs-breadcrumb a {
-    color: var(--primary, #E0AA3E);
+    color: #2AAB91;
     text-decoration: none;
 }
 
@@ -387,34 +387,34 @@
     justify-content: center;
     gap: 10px;
     padding: 4rem 0;
-    color: var(--text-secondary, #A0A0A0);
+    color: var(--text-secondary);
     font-size: 0.9rem;
 }
 
 .docs-error {
     text-align: center;
     padding: 4rem 0;
-    color: var(--text-secondary, #A0A0A0);
+    color: var(--text-secondary);
 }
 
 .docs-error h2 {
-    color: var(--text-primary, #F2F3EC);
+    color: var(--text-primary);
     margin-bottom: 0.5rem;
 }
 
 /* ── Markdown Content ── */
 .docs-markdown {
     line-height: 1.7;
-    color: var(--text-primary, #F2F3EC);
+    color: var(--text-primary);
 }
 
 .docs-markdown h1 {
     font-size: 1.75rem;
     font-weight: 800;
-    border-bottom: 1px solid var(--border, #2A2A2A);
+    border-bottom: 1px solid var(--border);
     padding-bottom: 0.5rem;
     margin: 2rem 0 1rem;
-    color: var(--text-primary, #F2F3EC);
+    color: var(--text-primary);
 }
 
 .docs-markdown h1:first-child {
@@ -425,21 +425,21 @@
     font-size: 1.35rem;
     font-weight: 700;
     margin: 2rem 0 0.75rem;
-    color: var(--text-primary, #F2F3EC);
+    color: var(--text-primary);
 }
 
 .docs-markdown h3 {
     font-size: 1.1rem;
     font-weight: 600;
     margin: 1.5rem 0 0.5rem;
-    color: var(--text-primary, #F2F3EC);
+    color: var(--text-primary);
 }
 
 .docs-markdown h4 {
     font-size: 0.95rem;
     font-weight: 600;
     margin: 1.25rem 0 0.5rem;
-    color: var(--text-primary, #F2F3EC);
+    color: var(--text-primary);
 }
 
 .docs-markdown p {
@@ -447,7 +447,7 @@
 }
 
 .docs-markdown a {
-    color: var(--primary, #E0AA3E);
+    color: #2AAB91;
     text-decoration: none;
 }
 
@@ -470,8 +470,8 @@
     font-size: 0.85em;
     padding: 2px 6px;
     border-radius: 4px;
-    background: rgba(224, 170, 62, 0.08);
-    color: var(--primary, #E0AA3E);
+    background: rgba(42, 171, 145, 0.12);
+    color: #0D5254;
 }
 
 .docs-markdown pre {
@@ -487,10 +487,10 @@
 }
 
 .docs-markdown blockquote {
-    border-inline-start: 3px solid var(--primary, #E0AA3E);
+    border-inline-start: 3px solid #2AAB91;
     padding: 0.5rem 1rem;
     margin: 0 0 1rem;
-    background: rgba(224, 170, 62, 0.04);
+    background: rgba(42, 171, 145, 0.05);
     border-radius: 0 8px 8px 0;
 }
 
@@ -508,15 +508,15 @@
 .docs-markdown th {
     text-align: start;
     padding: 8px 12px;
-    background: rgba(224, 170, 62, 0.06);
-    color: var(--primary, #E0AA3E);
-    border-bottom: 1px solid var(--border, #2A2A2A);
+    background: rgba(42, 171, 145, 0.1);
+    color: #0D5254;
+    border-bottom: 1px solid var(--border);
     font-weight: 600;
 }
 
 .docs-markdown td {
     padding: 8px 12px;
-    border-bottom: 1px solid var(--border, #2A2A2A);
+    border-bottom: 1px solid var(--border);
 }
 
 .docs-markdown tr:last-child td {
@@ -525,7 +525,7 @@
 
 .docs-markdown hr {
     border: none;
-    border-top: 1px solid var(--border, #2A2A2A);
+    border-top: 1px solid var(--border);
     margin: 2rem 0;
 }
 

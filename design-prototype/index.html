@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriPulse — Living Intelligence UI/UX Design Prototype</title>
+    <meta name="description" content="Standalone UI/UX Design Prototype for AgriPulse: AI-Powered Predictive Maintenance for Smart Irrigation Pumps.">
+
+    <!-- Google Fonts: Manrope, Inter, JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        agri: {
+                            ivory: '#F6F5EF',
+                            forest: '#173F35',
+                            evergreen: '#102D27',
+                            lime: '#C7F36B',
+                            sage: '#DCE7D8',
+                            graphite: '#252B28',
+                            stone: '#858A80',
+                            amber: '#E7A944',
+                            red: '#D94C45',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Manrope', 'system-ui', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Chart.js CDN for telemetry & RUL visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Design Prototype Stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-[#F6F5EF] text-[#252B28] antialiased">
+    <div class="app-shell">
+        <!-- 1. SLIM ELEGANT SIDEBAR -->
+        <aside class="sidebar" id="main-sidebar">
+            <div class="sidebar-header">
+                <div class="flex items-center gap-2.5 cursor-pointer" onclick="switchView('overview')">
+                    <!-- AgriPulse Vector Brand Mark -->
+                    <svg width="30" height="30" viewBox="0 0 48 48" fill="none" class="flex-shrink-0">
+                        <rect width="48" height="48" rx="10" fill="#173F35" />
+                        <path d="M12 36C12 24.95 20.95 16 32 16" stroke="#DCE7D8" stroke-width="2.5" stroke-linecap="round" stroke-opacity="0.5" />
+                        <path d="M16 36C16 28 22 22 30 22" stroke="#C7F36B" stroke-width="2.2" stroke-linecap="round" />
+                        <circle cx="33" cy="15" r="4.5" fill="#C7F36B" />
+                        <circle cx="33" cy="15" r="2" fill="#102D27" />
+                    </svg>
+                    <div class="leading-none sidebar-brand-text">
+                        <span class="font-extrabold text-base tracking-tight text-[#173F35]">Agri<span class="text-[#173F35]">Pulse</span></span>
+                        <div class="text-[0.62rem] font-bold tracking-wider text-[#858A80] uppercase mt-0.5">Living Intelligence</div>
+                    </div>
+                </div>
+
+                <button id="sidebar-toggle" class="p-1 rounded text-[#858A80] hover:text-[#173F35] border border-[#D8D7CD] hover:border-[#173F35] bg-white transition-colors" title="Toggle Sidebar Width">
+                    <i data-lucide="chevron-left" class="w-3.5 h-3.5"></i>
+                </button>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="sidebar-nav">
+                <div class="nav-section-title">Telemetry & AI</div>
+
+                <button class="nav-item active" data-view="overview">
+                    <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+                    <span>Overview</span>
+                </button>
+
+                <button class="nav-item" data-view="operations">
+                    <i data-lucide="activity" class="w-4 h-4"></i>
+                    <span>Live Operations</span>
+                    <span class="nav-badge">18</span>
+                </button>
+
+                <button class="nav-item" data-view="predictive">
+                    <i data-lucide="brain-circuit" class="w-4 h-4"></i>
+                    <span>Predictive Intelligence</span>
+                    <span class="nav-badge alert">RUL</span>
+                </button>
+
+                <button class="nav-item" data-view="diagnostics">
+                    <i data-lucide="sparkles" class="w-4 h-4"></i>
+                    <span>AI Diagnostics</span>
+                    <span class="nav-badge">RAG</span>
+                </button>
+
+                <button class="nav-item" data-view="field-vision">
+                    <i data-lucide="scan-eye" class="w-4 h-4"></i>
+                    <span>Field Vision</span>
+                    <span class="nav-badge">YOLO</span>
+                </button>
+
+                <div class="nav-section-title mt-2">Assets & Workflows</div>
+
+                <button class="nav-item" data-view="assets">
+                    <i data-lucide="layers" class="w-4 h-4"></i>
+                    <span>Pump Assets</span>
+                </button>
+
+                <button class="nav-item" data-view="maintenance">
+                    <i data-lucide="wrench" class="w-4 h-4"></i>
+                    <span>Maintenance</span>
+                    <span class="nav-badge alert">P1</span>
+                </button>
+
+                <button class="nav-item" data-view="analytics">
+                    <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+                    <span>Analytics</span>
+                </button>
+
+                <button class="nav-item" data-view="settings">
+                    <i data-lucide="settings" class="w-4 h-4"></i>
+                    <span>Settings</span>
+                </button>
+
+                <button class="nav-item" data-view="login">
+                    <i data-lucide="lock" class="w-4 h-4"></i>
+                    <span>Login Screen</span>
+                </button>
+            </nav>
+
+            <!-- Sidebar Footer with User Details -->
+            <div class="sidebar-footer">
+                <div class="user-plate">
+                    <div class="user-avatar">T</div>
+                    <div class="leading-tight overflow-hidden">
+                        <div class="text-xs font-bold text-[#252B28] truncate">Tariq Mansour</div>
+                        <div class="text-[0.65rem] text-[#858A80] truncate">Lead Irrigation Engineer</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- 2. MAIN APPLICATION SHELL -->
+        <div class="main-wrapper">
+            <!-- Top Header -->
+            <header class="top-navbar">
+                <!-- Sector Selector Dropdown -->
+                <div class="relative">
+                    <button id="sector-selector-btn" class="flex items-center gap-2 px-3 py-1.5 rounded-md bg-white border border-[#D8D7CD] hover:border-[#173F35] text-xs font-bold text-[#173F35] shadow-xs transition-colors">
+                        <span class="w-2 h-2 rounded-full bg-[#173F35]"></span>
+                        <span id="current-sector-label">All Irrigation Sectors (18 Pumps)</span>
+                        <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-[#858A80]"></i>
+                    </button>
+
+                    <div id="sector-dropdown" class="hidden absolute left-0 mt-1.5 w-72 bg-white border border-[#D8D7CD] rounded-md shadow-xl p-1.5 z-50">
+                        <div class="px-2.5 py-1 text-[0.68rem] uppercase font-bold text-[#858A80] border-b border-[#F0EFEA]">
+                            Irrigation Sector Filter
+                        </div>
+                        <button onclick="selectSector(null)" class="w-full text-left px-2.5 py-1.5 rounded text-xs hover:bg-[#F6F5EF] flex justify-between items-center mt-1">
+                            <div>
+                                <div class="font-bold">All Sectors Overview</div>
+                                <div class="text-[0.65rem] text-[#858A80]">18 Pumps • 4,370 Hectares</div>
+                            </div>
+                        </button>
+                        <button onclick="selectSector('sector-delta-7')" class="w-full text-left px-2.5 py-1.5 rounded text-xs hover:bg-[#F6F5EF] flex justify-between items-center">
+                            <div>
+                                <div class="font-bold">Sector Delta-7</div>
+                                <div class="text-[0.65rem] text-[#858A80]">Center Pivot Network • 6 Pumps</div>
+                            </div>
+                        </button>
+                        <button onclick="selectSector('sector-alpha-3')" class="w-full text-left px-2.5 py-1.5 rounded text-xs hover:bg-[#F6F5EF] flex justify-between items-center">
+                            <div>
+                                <div class="font-bold">Sector Alpha-3</div>
+                                <div class="text-[0.65rem] text-[#858A80]">Subsurface Drip • 6 Pumps</div>
+                            </div>
+                        </button>
+                        <button onclick="selectSector('sector-gamma-12')" class="w-full text-left px-2.5 py-1.5 rounded text-xs hover:bg-[#F6F5EF] flex justify-between items-center">
+                            <div>
+                                <div class="font-bold">Sector Gamma-12</div>
+                                <div class="text-[0.65rem] text-[#858A80]">Canal Lift Station • 6 Pumps</div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Header Actions -->
+                <div class="flex items-center gap-3">
+                    <!-- 3-State Connection Badge -->
+                    <div class="flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#DCE7D8]/70 border border-[#B5CDB0] text-[#173F35] text-[0.72rem] font-mono">
+                        <span class="w-2 h-2 rounded-full bg-[#173F35] animate-pulse"></span>
+                        <span class="font-bold">Live Prototype Link</span>
+                        <span class="text-[0.65rem] opacity-75">(120ms)</span>
+                    </div>
+
+                    <!-- Notification Bell -->
+                    <button onclick="switchView('predictive')" class="relative p-2 rounded-md hover:bg-white text-[#252B28] border border-transparent hover:border-[#D8D7CD] transition-colors" title="View Anomaly Alerts">
+                        <i data-lucide="bell" class="w-4 h-4"></i>
+                        <span class="absolute top-1 right-1 w-3.5 h-3.5 bg-[#D94C45] text-white text-[0.6rem] font-bold rounded-full flex items-center justify-center">1</span>
+                    </button>
+
+                    <!-- Avatar -->
+                    <div class="w-8 h-8 rounded-full bg-[#173F35] text-[#C7F36B] font-bold text-xs flex items-center justify-center shadow-xs">
+                        TM
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dynamic Workspace Canvas -->
+            <main class="content-canvas" id="view-container">
+                <!-- Dynamically rendered by app.js -->
+            </main>
+        </div>
+    </div>
+
+    <!-- Prototype Data & Script Controller -->
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
